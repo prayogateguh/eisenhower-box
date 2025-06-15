@@ -139,6 +139,14 @@
                 <input type="text" id="task-details-title" class="text-lg font-semibold bg-transparent text-gray-900 dark:text-white w-full focus:outline-none focus:bg-gray-200 dark:focus:bg-gray-700 rounded-md -ml-2 px-2 py-1">
                 <button id="task-details-close-btn" class="p-1 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700">&times;</button>
             </div>
+            <div class="mb-4">
+                <label for="task-details-status" class="text-sm text-gray-500 dark:text-gray-400 mb-1">Status</label>
+                <select id="task-details-status" class="w-full bg-gray-200/50 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 rounded-md p-2 focus-ring">
+                    <option value="draft">Draft</option>
+                    <option value="in progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                </select>
+            </div>
             <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Description</p>
             <textarea id="task-details-description" class="w-full bg-gray-200/50 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 rounded-md p-2 focus-ring mb-4" rows="3" placeholder="Add a description..."></textarea>
             
@@ -223,7 +231,8 @@
             // Main application state
             let appData = {};
             let uiState = { 
-                unsortedCollapsed: false
+                unsortedCollapsed: false,
+                sortOptions: {}
             };
             let currentQuadrant = null;
             let editingWorkspaceId = null;
@@ -274,6 +283,9 @@
                                 if (task.description === undefined) task.description = '';
                                 if (task.subTasks === undefined) task.subTasks = [];
                                 if (task.attachments === undefined) task.attachments = [];
+                                if (task.status === undefined) {
+                                    task.status = task.done ? 'completed' : 'draft';
+                                }
                             });
                         });
                     });
@@ -288,6 +300,7 @@
                 const storedUiState = JSON.parse(localStorage.getItem('eisenhowerUiStateV2'));
                 if (storedUiState) {
                     uiState = {...uiState, ...storedUiState};
+                    if (!uiState.sortOptions) uiState.sortOptions = {};
                 }
 
                 if (window.innerWidth < 768) {
@@ -448,6 +461,11 @@
                         <div class="flex justify-between items-center mb-1">
                             <h2 class="text-base md:text-lg font-semibold ${q.color}">${q.title}</h2>
                             <div class="flex items-center gap-2">
+                                <select class="sort-tasks-select bg-gray-300/50 dark:bg-gray-700/50 text-xs rounded-md p-1 border-none focus-ring" data-quadrant-id="${q.id}">
+                                    <option value="default">Sort by Default</option>
+                                    <option value="name-asc">Sort by Name (A-Z)</option>
+                                    <option value="name-desc">Sort by Name (Z-A)</option>
+                                </select>
                                 ${isUnsorted ? `<button id="toggle-unsorted-btn" title="Collapse" class="p-1 rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400"><svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>` : ''}
                             </div>
                         </div>
@@ -463,6 +481,8 @@
                     } else {
                         grid.appendChild(quadrantEl);
                     }
+
+                     quadrantEl.querySelector('.sort-tasks-select').value = uiState.sortOptions[q.id] || 'default';
 
                     const tasksContainer = quadrantEl.querySelector('.tasks-container');
 
@@ -536,6 +556,23 @@
                 });
             }
 
+            function sortTasks(tasks, sortOption) {
+                const sortedTasks = [...tasks];
+                switch(sortOption) {
+                    case 'name-asc':
+                        sortedTasks.sort((a, b) => a.text.localeCompare(b.text));
+                        break;
+                    case 'name-desc':
+                        sortedTasks.sort((a, b) => b.text.localeCompare(a.text));
+                        break;
+                    case 'default':
+                    default:
+                        // Return original order
+                        break;
+                }
+                return sortedTasks;
+            }
+
             function renderTasks() {
                 const activeWorkspace = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId);
                 if (!activeWorkspace) {
@@ -548,13 +585,19 @@
                     const tasksContainer = container.querySelector('.tasks-container');
                     tasksContainer.innerHTML = ''; 
                     
-                    const taskList = activeWorkspace.tasks[quadrantId];
+                    const sortOption = uiState.sortOptions[quadrantId] || 'default';
+                    let taskList = activeWorkspace.tasks[quadrantId];
+
+                    if(sortOption !== 'default') {
+                         taskList = sortTasks(taskList, sortOption);
+                    }
 
                     if (taskList.length === 0) {
                         tasksContainer.innerHTML = `<div class="flex-grow flex flex-col items-center justify-center h-full text-gray-500 dark:text-gray-600 opacity-50"><p class="text-sm font-medium mt-2">No tasks yet</p></div>`;
                     } else {
                         taskList.forEach((task, index) => {
-                             tasksContainer.appendChild(createTaskElement(task, quadrantId, index));
+                             const originalIndex = sortOption === 'default' ? index : activeWorkspace.tasks[quadrantId].findIndex(t => t === task);
+                             tasksContainer.appendChild(createTaskElement(task, quadrantId, originalIndex));
                         });
                     }
                 }
@@ -567,6 +610,12 @@
                 div.dataset.index = index;
                 div.draggable = true;
 
+                const statusColors = {
+                    draft: 'bg-gray-400',
+                    'in progress': 'bg-blue-500',
+                    completed: 'bg-green-500'
+                };
+
                 const hasDetails = task.description || (task.subTasks && task.subTasks.length > 0) || (task.attachments && task.attachments.length > 0);
                 const subtaskProgress = (task.subTasks && task.subTasks.length > 0) ? `${task.subTasks.filter(st => st.done).length}/${task.subTasks.length}` : '';
                 const attachmentCount = (task.attachments && task.attachments.length > 0) ? task.attachments.length : 0;
@@ -575,9 +624,12 @@
                     <div class="flex items-center gap-3 flex-grow min-w-0">
                         <input type="checkbox" class="task-checkbox h-4 w-4 rounded border-gray-400 dark:border-gray-500 bg-gray-200 dark:bg-gray-700 text-blue-500 flex-shrink-0">
                         <div class="flex-grow min-w-0 cursor-pointer">
-                            <p class="task-text text-sm flex-grow truncate ${task.done ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-800 dark:text-gray-200'}">${task.text}</p>
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full ${statusColors[task.status] || 'bg-gray-400'}"></span>
+                                <p class="task-text text-sm flex-grow truncate ${task.done ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-800 dark:text-gray-200'}">${task.text}</p>
+                            </div>
                             ${hasDetails ? `
-                            <div class="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-500 mt-1">
+                            <div class="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-500 mt-1 ml-4">
                                 ${subtaskProgress ? `
                                 <span class="flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm2-1a1 1 0 00-1 1v2h12V5a1 1 0 00-1-1H5zM4 9v6a1 1 0 001 1h10a1 1 0 001-1V9H4z" clip-rule="evenodd" /></svg>
@@ -643,6 +695,7 @@
                 const task = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId).tasks[quadrantId][index];
                 
                 taskDetailsModal.querySelector('#task-details-title').value = task.text;
+                taskDetailsModal.querySelector('#task-details-status').value = task.status;
                 taskDetailsModal.querySelector('#task-details-description').value = task.description;
                 renderSubTasks(task.subTasks);
                 renderAttachments(task.attachments);
@@ -730,6 +783,8 @@
                     const subtaskIndex = e.target.closest('.subtask-item').dataset.index;
                     task.subTasks[subtaskIndex].done = e.target.checked;
                     task.done = task.subTasks.length > 0 && task.subTasks.every(st => st.done);
+                    if(task.done) task.status = 'completed';
+                    else task.status = 'in progress';
                     saveData();
                     renderSubTasks(task.subTasks);
                     renderTasks();
@@ -738,6 +793,7 @@
                     const subtaskIndex = e.target.closest('.subtask-item').dataset.index;
                     task.subTasks.splice(subtaskIndex, 1);
                     task.done = task.subTasks.length > 0 && task.subTasks.every(st => st.done);
+                    if(task.done) task.status = 'completed';
                     saveData();
                     renderSubTasks(task.subTasks);
                     renderTasks();
@@ -800,6 +856,20 @@
                     }
                 }
             });
+
+             taskDetailsModal.addEventListener('change', e => {
+                if(!editingTaskLocation) return;
+                if(e.target.matches('#task-details-status')) {
+                    const { quadrantId, index } = editingTaskLocation;
+                    const activeWS = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId);
+                    const task = activeWS.tasks[quadrantId][index];
+                    task.status = e.target.value;
+                    task.done = task.status === 'completed';
+                    saveData();
+                    renderTasks();
+                }
+            });
+
 
             fileAttachmentInput.addEventListener('change', async e => {
                 if (!editingTaskLocation || !e.target.files[0]) return;
@@ -991,14 +1061,25 @@
                         renderTasks();
                     } else if (e.target.matches('.task-checkbox')) {
                         task.done = e.target.checked;
-                        if(task.subTasks) {
-                            task.subTasks.forEach(st => st.done = task.done);
+                        if (task.done) {
+                            task.status = 'completed';
+                        } else {
+                            task.status = 'in progress';
                         }
                         saveData();
                         renderTasks();
                     } else if (!e.target.matches('input, button, svg, path')) {
                         openTaskDetailsModal(quadrantId, index);
                     }
+                }
+            });
+
+            document.body.addEventListener('change', e => {
+                 if (e.target.matches('.sort-tasks-select')) {
+                    const quadrantId = e.target.dataset.quadrantId;
+                    uiState.sortOptions[quadrantId] = e.target.value;
+                    saveData();
+                    renderTasks();
                 }
             });
             
@@ -1026,7 +1107,7 @@
                 const taskText = taskInput.value.trim();
                 if (taskText) {
                     const activeWorkspace = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId);
-                    const task = { text: taskText, done: false, description: '', subTasks: [], attachments: [] };
+                    const task = { text: taskText, done: false, status: 'draft', description: '', subTasks: [], attachments: [] };
                     if (currentQuadrant) activeWorkspace.tasks[currentQuadrant].push(task); 
                     saveData();
                     renderTasks();
