@@ -1,0 +1,660 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>time.fyi - daily planner</title>
+    <meta
+      name="description"
+      content="Daily planner by time.fyi is a free tool to help you plan your days and weeks and boost your productivity."
+    />
+    <link rel="stylesheet" href="css/daily-planner.css" />
+  </head>
+  <body class="bg-black text-gray-100">
+    <main class="relative mx-auto min-h-screen">
+      <div class="flex min-h-screen flex-row">
+        <div
+          class="relative hidden min-h-full flex-shrink-0 flex-col items-center border-r border-r-zinc-800 bg-zinc-900 pt-4 sm:flex"
+        >
+          <button
+            class="mx-3 mb-3 rounded-lg bg-zinc-800 p-1 text-zinc-200 opacity-50 hover:opacity-100"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-chevron-right h-[15px] w-[15px]"
+            >
+              <path d="m9 18 6-6-6-6"></path>
+            </svg></button
+          ><a
+            href="https://time.fyi/daily-planner"
+            class="group pointer relative flex w-full items-center gap-2 px-3 py-2 hover:opacity-100 text-yellow-400 opacity-100 hover:text-yellow-400"
+            ><span class="relative"
+              ><svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 48 48"
+                id="Calendar-Check--Streamline-Ultimate"
+                height="48"
+                width="48"
+                class="h-[20px] w-[20px]"
+              >
+                <g>
+                  <path
+                    d="M43 6h-5.5a0.5 0.5 0 0 1 -0.5 -0.5V2a2 2 0 0 0 -4 0v9.5a1.5 1.5 0 0 1 -3 0V7a1 1 0 0 0 -1 -1H16.5A0.5 0.5 0 0 1 16 5.5V2a2 2 0 0 0 -4 0v9.5a1.5 1.5 0 0 1 -3 0V7A1 1 0 0 0 8 6H5a4 4 0 0 0 -4 4v34a4 4 0 0 0 4 4h38a4 4 0 0 0 4 -4V10a4 4 0 0 0 -4 -4Zm0 37a1 1 0 0 1 -1 1H6a1 1 0 0 1 -1 -1v-24A1 1 0 0 1 6 18h36a1 1 0 0 1 1 1Z"
+                    fill="currentColor"
+                    stroke-width="1"
+                  ></path>
+                  <path
+                    d="M24 21a10 10 0 1 0 10 10 10 10 0 0 0 -10 -10Zm5.66 8 -4.84 6.44a2.76 2.76 0 0 1 -4.16 0.3l-2.5 -2.5a1.5 1.5 0 1 1 2.12 -2.12l2.3 2.3 4.68 -6.22a1.5 1.5 0 0 1 2.4 1.8Z"
+                    fill="currentColor"
+                    stroke-width="1"
+                  ></path>
+                </g></svg></span
+            ><span
+              class="pointer-events-none absolute z-[99999] block w-max transform rounded-md px-2 py-1 font-medium opacity-0 shadow-sm duration-100 group-hover:opacity-100 left-full top-1/2 -translate-y-1/2 -translate-x-1.5 bg-zinc-400 text-xs text-zinc-700"
+              ><span class="flex items-center gap-1">Daily Planner</span></span
+            ></a
+          ><button
+            class="group relative mb-4 mt-auto flex w-full items-center gap-2 px-3 py-2 text-zinc-300 opacity-60 outline-none hover:text-zinc-400 hover:opacity-100"
+            type="button"
+            id="radix-:r1r1:"
+            aria-haspopup="menu"
+            aria-expanded="false"
+            data-state="closed"
+          >
+            <div
+              class="flex items-center justify-center rounded-full bg-neutral-600 uppercase text-neutral-100 size-5 text-sm"
+            >
+              P
+            </div>
+            <span
+              class="pointer-events-none absolute z-[99999] block w-max transform rounded-md px-2 py-1 font-medium opacity-0 shadow-sm duration-100 group-hover:opacity-100 left-full top-1/2 -translate-y-1/2 -translate-x-1.5 bg-zinc-400 text-xs text-zinc-700"
+            >
+              Account
+            </span>
+          </button>
+        </div>
+        <div class="flex flex-grow flex-col bg-black">
+          <div
+            class="flex min-h-[33px] justify-between gap-2.5 border-b border-b-zinc-800 bg-zinc-900 text-xs sm:gap-0"
+          >
+            <div class="flex items-stretch">
+              <button
+                class="block bg-zinc-800 px-2 hover:bg-zinc-700 sm:hidden"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="lucide lucide-menu"
+                >
+                  <line x1="4" x2="20" y1="12" y2="12"></line>
+                  <line x1="4" x2="20" y1="6" y2="6"></line>
+                  <line x1="4" x2="20" y1="18" y2="18"></line></svg
+                ><span class="sr-only">Menu</span>
+              </button>
+              <div
+                class="flex items-center rounded-lg px-3 text-sm text-zinc-500"
+              >
+                <span class="hidden md:block">Daily Planner</span>
+                <div class="flex flex-row items-center gap-[1.5px]">
+                  <span
+                    class="mx-2 hidden text-xs font-semibold opacity-30 md:block"
+                    >/</span
+                  >
+                  <div class="relative">
+                    <button
+                      class="flex items-center gap-1.5 rounded-md px-1.5 py-0.5 hover:bg-zinc-700/70 hover:text-zinc-400"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="13"
+                        height="13"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="lucide lucide-folder fill-current"
+                      >
+                        <path
+                          d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"
+                        ></path></svg
+                      >Personal<svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="13"
+                        height="13"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="lucide lucide-chevron-down -ml-0.5"
+                      >
+                        <path d="m6 9 6 6 6-6"></path>
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="relative">
+                    <button
+                      class="flex items-center gap-1.5 rounded-md px-1.5 py-0.5 hover:bg-zinc-700/70 hover:text-zinc-400"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="13"
+                        height="13"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="lucide lucide-package"
+                      >
+                        <path d="m7.5 4.27 9 5.15"></path>
+                        <path
+                          d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"
+                        ></path>
+                        <path d="m3.3 7 8.7 5 8.7-5"></path>
+                        <path d="M12 22V12"></path></svg
+                      >General<svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="13"
+                        height="13"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="lucide lucide-chevron-down -ml-0.5"
+                      >
+                        <path d="m6 9 6 6 6-6"></path>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="flex text-sm">
+              <a
+                href="mailto:kamranahmed.se@gmail.com"
+                class="hidden items-center overflow-hidden px-2 text-sm text-zinc-500 hover:bg-zinc-800 lg:flex"
+                ><svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="lucide lucide-mail flex-shrink-0"
+                >
+                  <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+                  <path
+                    d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"
+                  ></path></svg
+                ><span class="ml-1.5 hidden sm:inline-block">Feedback</span></a
+              >
+              <div class="relative hidden md:block">
+                <button
+                  class="flex h-full items-center pl-2 pr-2.5 text-sm text-zinc-500 hover:bg-zinc-800"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="13"
+                    height="13"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-music2"
+                  >
+                    <circle cx="8" cy="18" r="4"></circle>
+                    <path d="M12 18V2l7 4"></path></svg
+                  ><span class="ml-1.5 hidden sm:inline">Focus</span>
+                </button>
+              </div>
+              <span
+                class="hidden items-center overflow-hidden px-3 text-sm transition-all duration-200 sm:flex"
+                ><span
+                  ><span class="tabular-nums">12</span
+                  ><span class="mx-0.5 animate-show-hide font-serif">:</span
+                  ><span class="tabular-nums">26</span
+                  ><span class="ml-1 text-gray-500">PM</span></span
+                ></span
+              ><button
+                class="relative z-20 hidden w-12 font-sans text-sm font-medium text-neutral-400 transition-colors duration-300 sm:inline-block bg-zinc-800 hover:bg-zinc-700"
+              >
+                <span class="tabular-nums">12</span
+                ><span class="ml-[2px] font-medium">hr</span>
+              </button>
+            </div>
+          </div>
+          <div class="relative flex flex-grow flex-row">
+            <div class="m-4 flex flex-grow flex-col gap-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <button
+                    class="flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-sm font-medium border-yellow-400 bg-yellow-400 text-black hover:bg-yellow-400 hover:text-black"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-calendar-check"
+                    >
+                      <path d="M8 2v4"></path>
+                      <path d="M16 2v4"></path>
+                      <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+                      <path d="M3 10h18"></path>
+                      <path d="m9 16 2 2 4-4"></path></svg
+                    ><span class="hidden items-center gap-1.5 sm:inline-flex"
+                      >Daily Planner</span
+                    ></button
+                  ><button
+                    class="flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900 px-2.5 py-1.5 text-sm font-medium text-zinc-400 hover:bg-zinc-800 hover:text-zinc-300"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-repeat"
+                    >
+                      <path d="m17 2 4 4-4 4"></path>
+                      <path d="M3 11v-1a4 4 0 0 1 4-4h14"></path>
+                      <path d="m7 22-4-4 4-4"></path>
+                      <path d="M21 13v1a4 4 0 0 1-4 4H3"></path></svg
+                    ><span class="hidden items-center gap-1.5 sm:inline-flex"
+                      >Routine</span
+                    ></button
+                  ><button
+                    class="flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900 px-2.5 py-1.5 text-sm font-medium text-zinc-400 hover:bg-zinc-800 hover:text-zinc-300"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-square-check-big"
+                    >
+                      <path d="m9 11 3 3L22 4"></path>
+                      <path
+                        d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"
+                      ></path></svg
+                    ><span class="hidden items-center gap-1.5 sm:inline-flex"
+                      >Task Dump</span
+                    >
+                  </button>
+                </div>
+                <div class="flex">
+                  <button
+                    class="mr-2 flex items-center justify-between gap-1.5 rounded-md bg-zinc-800 px-3 py-1.5 text-sm text-zinc-400 outline-none hover:bg-zinc-700 hover:text-zinc-200 focus-visible:shadow-[0_0_0_1px] focus-visible:shadow-zinc-900"
+                  >
+                    Today
+                  </button>
+                  <div class="react-datepicker-wrapper">
+                    <div class="react-datepicker__input-container">
+                      <button
+                        class="mr-2 flex h-[32px] items-center rounded-md bg-zinc-800 px-3 py-1.5 text-sm text-zinc-400 outline-none hover:bg-zinc-700 hover:text-zinc-200 focus-visible:shadow-[0_0_0_1px] focus-visible:shadow-zinc-900"
+                        value="06/15/2025"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="lucide lucide-calendar"
+                        >
+                          <path d="M8 2v4"></path>
+                          <path d="M16 2v4"></path>
+                          <rect
+                            width="18"
+                            height="18"
+                            x="3"
+                            y="4"
+                            rx="2"
+                          ></rect>
+                          <path d="M3 10h18"></path>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                  <button
+                    class="rounded-md p-1 text-zinc-600 hover:bg-zinc-700 hover:text-zinc-300"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-chevron-left"
+                    >
+                      <path d="m15 18-6-6 6-6"></path>
+                    </svg></button
+                  ><button
+                    class="rounded-md p-1 text-zinc-600 hover:bg-zinc-700 hover:text-zinc-300"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-chevron-right"
+                    >
+                      <path d="m9 18 6-6-6-6"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div
+                class="grid flex-grow gap-4 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4"
+              >
+                <div
+                  class="relative flex min-h-[400px] flex-grow flex-col overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900 px-4 pb-4"
+                >
+                  <h3
+                    class="flex justify-between py-4 text-xs uppercase tracking-[0.15em] text-zinc-500"
+                  >
+                    <span class="hidden sm:inline">Important &amp; Urgent</span
+                    ><span class="inline sm:hidden">Sat, 14 Jun</span>
+                  </h3>
+                  <div class="relative -mx-3 flex flex-grow flex-col">
+                    <div
+                      class="custom-scrollbar relative flex flex-grow flex-col overflow-y-scroll"
+                    >
+                      <div class="absolute inset-0 flex flex-col gap-5 px-3">
+                        <div class="flex-grow pb-10">
+                          <div
+                            id="planned-tasks-2025-06-14T00:00:00.000+07:00"
+                            data-date="2025-06-14"
+                          >
+                            <div
+                              class="absolute inset-0 flex flex-1 flex-grow flex-col items-center justify-center gap-1 text-sm text-zinc-600"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                class="lucide lucide-square-check-big mb-3 flex h-[45px] w-[45px] flex-shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-800"
+                              >
+                                <path d="m9 11 3 3L22 4"></path>
+                                <path
+                                  d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"
+                                ></path>
+                              </svg>
+                              <p>No tasks for this day</p>
+                              <p>
+                                <button
+                                  class="text-zinc-500 underline underline-offset-2 hover:text-zinc-300"
+                                >
+                                  Add a new task
+                                </button>
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="relative flex min-h-[400px] flex-grow flex-col overflow-hidden rounded-2xl border bg-zinc-900 px-4 pb-4 border-yellow-400"
+                >
+                  <h3
+                    class="flex justify-between py-4 text-xs uppercase tracking-[0.15em] text-zinc-500"
+                  >
+                    <span class="hidden sm:inline"
+                      >Important &amp; Not Urgent</span
+                    ><span class="inline sm:hidden">Sun, 15 Jun</span
+                    ><span class="ml-2 text-yellow-400">Today</span>
+                  </h3>
+                  <div class="relative -mx-3 flex flex-grow flex-col">
+                    <div
+                      class="custom-scrollbar relative flex flex-grow flex-col overflow-y-scroll"
+                    >
+                      <div class="absolute inset-0 flex flex-col gap-5 px-3">
+                        <div class="flex-grow pb-10">
+                          <div class="z-10 mb-2 relative -mx-3">
+                            <button
+                              class="flex w-full items-center justify-between bg-zinc-800 px-4 py-2.5 text-sm text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-300"
+                            >
+                              <span
+                                >Previous Pending Tasks
+                                <span
+                                  class="ml-1 rounded-full bg-zinc-700 px-1.5 py-0.5 text-xs"
+                                  >6</span
+                                ></span
+                              ><svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                class="lucide lucide-chevron-down flex h-[15px] w-[15px] flex-shrink-0 cursor-pointer items-center justify-center rounded-md hover:border-zinc-400"
+                              >
+                                <path d="m6 9 6 6 6-6"></path>
+                              </svg>
+                            </button>
+                          </div>
+                          <div
+                            id="planned-tasks-2025-06-15T00:00:00.000+07:00"
+                            data-date="2025-06-15"
+                          >
+                            <div
+                              class="absolute inset-0 flex flex-1 flex-grow flex-col items-center justify-center gap-1 text-sm text-zinc-600"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                class="lucide lucide-square-check-big mb-3 flex h-[45px] w-[45px] flex-shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-800"
+                              >
+                                <path d="m9 11 3 3L22 4"></path>
+                                <path
+                                  d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"
+                                ></path>
+                              </svg>
+                              <p>No tasks for this day</p>
+                              <p>
+                                <button
+                                  class="text-zinc-500 underline underline-offset-2 hover:text-zinc-300"
+                                >
+                                  Add a new task
+                                </button>
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="relative flex min-h-[400px] flex-grow flex-col overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900 px-4 pb-4"
+                >
+                  <h3
+                    class="flex justify-between py-4 text-xs uppercase tracking-[0.15em] text-zinc-500"
+                  >
+                    <span class="hidden sm:inline"
+                      >Not Improtant &amp; Urgent</span
+                    ><span class="inline sm:hidden">Mon, 16 Jun</span>
+                  </h3>
+                  <div class="relative -mx-3 flex flex-grow flex-col">
+                    <div
+                      class="custom-scrollbar relative flex flex-grow flex-col overflow-y-scroll"
+                    >
+                      <div class="absolute inset-0 flex flex-col gap-5 px-3">
+                        <div class="flex-grow pb-10">
+                          <div
+                            id="planned-tasks-2025-06-16T00:00:00.000+07:00"
+                            data-date="2025-06-16"
+                          >
+                            <div
+                              class="absolute inset-0 flex flex-1 flex-grow flex-col items-center justify-center gap-1 text-sm text-zinc-600"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                class="lucide lucide-square-check-big mb-3 flex h-[45px] w-[45px] flex-shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-800"
+                              >
+                                <path d="m9 11 3 3L22 4"></path>
+                                <path
+                                  d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"
+                                ></path>
+                              </svg>
+                              <p>No tasks for this day</p>
+                              <p>
+                                <button
+                                  class="text-zinc-500 underline underline-offset-2 hover:text-zinc-300"
+                                >
+                                  Add a new task
+                                </button>
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="relative flex min-h-[400px] flex-grow flex-col overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900 px-4 pb-4"
+                >
+                  <h3
+                    class="flex justify-between py-4 text-xs uppercase tracking-[0.15em] text-zinc-500"
+                  >
+                    <span class="hidden sm:inline"
+                      >Not Important &amp; Not Urgent</span
+                    >
+                  </h3>
+                  <div class="relative -mx-3 flex flex-grow flex-col">
+                    <div
+                      class="custom-scrollbar relative flex flex-grow flex-col overflow-y-scroll"
+                    >
+                      <div class="absolute inset-0 flex flex-col gap-5 px-3">
+                        <div class="flex-grow pb-10">
+                          <div
+                            id="planned-tasks-2025-06-17T00:00:00.000+07:00"
+                            data-date="2025-06-17"
+                          >
+                            <div
+                              class="absolute inset-0 flex flex-1 flex-grow flex-col items-center justify-center gap-1 text-sm text-zinc-600"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                class="lucide lucide-square-check-big mb-3 flex h-[45px] w-[45px] flex-shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-800"
+                              >
+                                <path d="m9 11 3 3L22 4"></path>
+                                <path
+                                  d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"
+                                ></path>
+                              </svg>
+                              <p>No tasks for this day</p>
+                              <p>
+                                <button
+                                  class="text-zinc-500 underline underline-offset-2 hover:text-zinc-300"
+                                >
+                                  Add a new task
+                                </button>
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
