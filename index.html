@@ -79,7 +79,7 @@
                  </div>
             </header>
             
-            <main class="flex-1 overflow-y-auto p-4 sm:p-6">
+            <main class="flex-1 overflow-y-auto p-4 sm:p-6 pb-20">
                 <div class="flex flex-col md:flex-row gap-6 h-full">
                     <!-- Unsorted Column Wrapper -->
                     <div id="unsorted-column-wrapper" class="w-full md:w-96 md:flex-shrink-0 transition-all duration-300 ease-in-out">
@@ -322,20 +322,39 @@
 
             // --- UI STATE MANAGEMENT ---
             function applyUiState() {
-                if (uiState.unsortedCollapsed) {
-                    unsortedColumnWrapper.classList.remove('md:w-96');
-                    unsortedColumnWrapper.classList.add('md:w-16');
-                    unsortedContainer.classList.add('hidden');
-                    if (window.innerWidth >= 768) {
-                       expandUnsortedContainer.classList.remove('hidden');
-                       expandUnsortedContainer.classList.add('flex');
-                    }
-                } else {
-                    unsortedColumnWrapper.classList.add('md:w-96');
-                    unsortedColumnWrapper.classList.remove('md:w-16');
-                    unsortedContainer.classList.remove('hidden');
+                const unsortedQuadrant = document.getElementById('unsorted');
+                if (!unsortedQuadrant) return;
+                const toggleBtn = document.getElementById('toggle-unsorted-btn');
+                const collapsibleContent = unsortedQuadrant.querySelector('.collapsible-content');
+                const toggleIcon = toggleBtn.querySelector('svg');
+
+                if (window.innerWidth < 768) { // Mobile
+                    unsortedColumnWrapper.style.width = '';
                     expandUnsortedContainer.classList.add('hidden');
-                    expandUnsortedContainer.classList.remove('flex');
+                    unsortedContainer.classList.remove('hidden');
+                    if (uiState.unsortedCollapsed) {
+                        collapsibleContent.classList.add('hidden');
+                        toggleIcon.classList.remove('rotate-180');
+                    } else {
+                        collapsibleContent.classList.remove('hidden');
+                        toggleIcon.classList.add('rotate-180');
+                    }
+                } else { // Desktop
+                    collapsibleContent.classList.remove('hidden');
+                    toggleIcon.classList.remove('rotate-180');
+                    if (uiState.unsortedCollapsed) {
+                        unsortedColumnWrapper.classList.remove('md:w-96');
+                        unsortedColumnWrapper.classList.add('md:w-16');
+                        unsortedContainer.classList.add('hidden');
+                        expandUnsortedContainer.classList.remove('hidden');
+                        expandUnsortedContainer.classList.add('flex');
+                    } else {
+                        unsortedColumnWrapper.classList.add('md:w-96');
+                        unsortedColumnWrapper.classList.remove('md:w-16');
+                        unsortedContainer.classList.remove('hidden');
+                        expandUnsortedContainer.classList.add('hidden');
+                        expandUnsortedContainer.classList.remove('flex');
+                    }
                 }
             }
 
@@ -416,21 +435,27 @@
                 grid.innerHTML = '';
                 unsortedContainer.innerHTML = '';
 
-                quadrantData.forEach(q => {
+                quadrantData.forEach((q, i) => {
                     const quadrantEl = document.createElement('div');
                     quadrantEl.id = q.id;
                     const isUnsorted = q.id === 'unsorted';
-                    quadrantEl.className = `quadrant-container bg-gray-200/50 dark:bg-gray-800 rounded-2xl border border-gray-300 dark:border-gray-700 p-4 md:p-5 flex flex-col h-full`;
+                    let quadrantClasses = 'quadrant-container bg-gray-200/50 dark:bg-gray-800 rounded-2xl border border-gray-300 dark:border-gray-700 p-4 md:p-5 flex flex-col';
+                    if (i === quadrantData.length - 1) {
+                        quadrantClasses += ' mb-4 md:mb-0';
+                    }
+                    quadrantEl.className = quadrantClasses;
                     quadrantEl.innerHTML = `
                         <div class="flex justify-between items-center mb-1">
                             <h2 class="text-base md:text-lg font-semibold ${q.color}">${q.title}</h2>
                             <div class="flex items-center gap-2">
-                                ${isUnsorted ? `<button id="toggle-unsorted-btn" title="Collapse" class="p-1 rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 md:hidden"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg></button>` : ''}
+                                ${isUnsorted ? `<button id="toggle-unsorted-btn" title="Collapse" class="p-1 rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400"><svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>` : ''}
                             </div>
                         </div>
-                        <p class="text-sm text-gray-500 dark:text-gray-500 mb-4">${q.desc}</p>
-                        <div class="tasks-container flex-grow overflow-y-auto space-y-2 pr-2 min-h-[100px]"></div>
-                        <button class="add-task-btn mt-4 text-sm font-medium ${q.color.replace('text-', 'hover:text-').replace('-500', '-600').replace('-400', '-300')} self-start focus-ring rounded">Add a task</button>
+                        <div class="collapsible-content flex flex-col flex-grow min-h-0">
+                            <p class="text-sm text-gray-500 dark:text-gray-500 mb-4">${q.desc}</p>
+                            <div class="tasks-container flex-grow overflow-y-auto space-y-2 pr-2 min-h-[100px]"></div>
+                        </div>
+                        <button class="add-task-btn mt-auto pt-4 text-sm font-medium ${q.color.replace('text-', 'hover:text-').replace('-500', '-600').replace('-400', '-300')} self-start focus-ring rounded">Add a task</button>
                     `;
                     
                     if (isUnsorted) {
@@ -1034,6 +1059,8 @@
             window.addEventListener('keydown', e => { if (e.key === 'Escape') { closeSimpleTaskModal(); closeWorkspaceModal(); closeConfirmationModal(); closeTaskDetailsModal(); closeMediaPreview(); }});
             workspaceInput.addEventListener('keypress', e => e.key === 'Enter' && workspaceModal.querySelector('#workspace-save-btn').click());
             taskInput.addEventListener('keypress', e => e.key === 'Enter' && taskModal.querySelector('#task-save-btn').click());
+
+            window.addEventListener('resize', applyUiState);
 
             // Initial Load
             async function main() {
