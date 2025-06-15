@@ -86,7 +86,7 @@
                         <div id="unsorted-container" class="w-full h-full">
                             <!-- Quadrant will be rendered here by renderQuadrants() -->
                         </div>
-                        <button id="desktop-toggle-unsorted-btn" title="Collapse" class="absolute top-1/2 -right-4 transform -translate-y-1/2 z-10 p-2 rounded-full bg-white dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700 hidden md:flex items-center justify-center">
+                         <button id="desktop-toggle-unsorted-btn" title="Toggle Unsorted Panel" class="absolute top-1/2 -right-4 transform -translate-y-1/2 z-10 p-2 rounded-full bg-white dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700 hidden md:flex items-center justify-center">
                              <svg class="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         </button>
                     </div>
@@ -319,17 +319,19 @@
             // --- UI STATE MANAGEMENT ---
             function applyUiState() {
                 const unsortedQuadrant = document.getElementById('unsorted');
-                if (!unsortedQuadrant) return;
+                 if (!unsortedQuadrant) return;
+                const desktopToggleBtn = document.getElementById('desktop-toggle-unsorted-btn');
                 const mobileToggleBtn = document.getElementById('toggle-unsorted-btn');
                 const collapsibleContent = unsortedQuadrant.querySelector('.collapsible-content');
                 const mobileToggleIcon = mobileToggleBtn.querySelector('svg');
-                
-                const desktopToggleBtn = document.getElementById('desktop-toggle-unsorted-btn');
                 const desktopToggleIcon = desktopToggleBtn.querySelector('svg');
 
                 if (window.innerWidth < 768) { // Mobile
                     desktopToggleBtn.classList.add('hidden');
                     mobileToggleBtn.classList.remove('hidden');
+                    unsortedColumnWrapper.classList.remove('md:w-16'); 
+                    unsortedContainer.classList.remove('hidden');
+
                     if (uiState.unsortedCollapsed) {
                         collapsibleContent.classList.add('hidden');
                         mobileToggleIcon.classList.remove('rotate-180');
@@ -341,15 +343,15 @@
                     desktopToggleBtn.classList.remove('hidden');
                     mobileToggleBtn.classList.add('hidden');
                     collapsibleContent.classList.remove('hidden');
-                    mobileToggleIcon.classList.remove('rotate-180');
+                    
                     if (uiState.unsortedCollapsed) {
                         unsortedColumnWrapper.classList.remove('md:w-96');
-                        unsortedColumnWrapper.classList.add('md:w-16');
+                        unsortedColumnWrapper.classList.add('md:w-3');
                         unsortedContainer.classList.add('hidden');
                         desktopToggleIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />';
                     } else {
                         unsortedColumnWrapper.classList.add('md:w-96');
-                        unsortedColumnWrapper.classList.remove('md:w-16');
+                        unsortedColumnWrapper.classList.remove('md:w-3');
                         unsortedContainer.classList.remove('hidden');
                         desktopToggleIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />';
                     }
@@ -443,19 +445,24 @@
                     }
                     quadrantEl.className = quadrantClasses;
                     quadrantEl.innerHTML = `
-                        <div class="flex justify-between items-center mb-1">
-                            <h2 class="text-base md:text-lg font-semibold ${q.color}">${q.title}</h2>
-                            <div class="flex items-center gap-2">
-                                <select class="sort-tasks-select bg-gray-300/50 dark:bg-gray-700/50 text-xs rounded-md p-1 border-none focus-ring" data-quadrant-id="${q.id}">
-                                    <option value="default">Sort by Default</option>
-                                    <option value="name-asc">Sort by Name (A-Z)</option>
-                                    <option value="name-desc">Sort by Name (Z-A)</option>
-                                </select>
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h2 class="text-base md:text-lg font-semibold ${q.color}">${q.title}</h2>
+                                <p class="text-sm text-gray-500 dark:text-gray-500">${q.desc}</p>
+                            </div>
+                            <div class="flex items-center gap-2 relative">
+                                <button class="sort-tasks-btn p-2 rounded-md hover:bg-gray-300 dark:hover:bg-gray-700/50">
+                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9M3 12h9m-9 4h13M16 12a2 2 0 100-4 2 2 0 000 4zM16 12v6m0 0l-2-2m2 2l2-2"></path></svg>
+                                </button>
+                                <div class="sort-menu hidden absolute right-0 top-full mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-xl z-10">
+                                    <button data-quadrant-id="${q.id}" data-sort="default" class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">Default</button>
+                                    <button data-quadrant-id="${q.id}" data-sort="name-asc" class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">Name (A-Z)</button>
+                                    <button data-quadrant-id="${q.id}" data-sort="name-desc" class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">Name (Z-A)</button>
+                                </div>
                                 ${isUnsorted ? `<button id="toggle-unsorted-btn" title="Collapse" class="p-1 rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 md:hidden"><svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>` : ''}
                             </div>
                         </div>
                         <div class="collapsible-content flex flex-col flex-grow min-h-0">
-                            <p class="text-sm text-gray-500 dark:text-gray-500 mb-4">${q.desc}</p>
                             <div class="tasks-container flex-grow overflow-y-auto space-y-2 pr-2"></div>
                         </div>
                         <div class="add-task-container mt-auto pt-4">
@@ -478,8 +485,6 @@
                     } else {
                         grid.appendChild(quadrantEl);
                     }
-
-                     quadrantEl.querySelector('.sort-tasks-select').value = uiState.sortOptions[q.id] || 'default';
 
                     const tasksContainer = quadrantEl.querySelector('.tasks-container');
 
@@ -1023,7 +1028,7 @@
                     dropdownMenu?.classList.add('hidden');
                 }
 
-                if (e.target.closest('#toggle-unsorted-btn') || e.target.closest('#desktop-toggle-unsorted-btn')) {
+                 if (e.target.closest('#toggle-unsorted-btn') || e.target.closest('#desktop-toggle-unsorted-btn')) {
                     uiState.unsortedCollapsed = !uiState.unsortedCollapsed;
                     saveData();
                     applyUiState();
@@ -1038,6 +1043,29 @@
                 const taskItem = e.target.closest('.task-item');
                 const cancelBtn = e.target.closest('.cancel-inline-task-btn');
                 const saveBtn = e.target.closest('.save-inline-task-btn');
+                const sortBtn = e.target.closest('.sort-tasks-btn');
+                const sortMenuItem = e.target.closest('.sort-menu button');
+
+                if (sortBtn) {
+                    const menu = sortBtn.nextElementSibling;
+                    menu.classList.toggle('hidden');
+                    return;
+                }
+                
+                if (sortMenuItem) {
+                    const quadrantId = sortMenuItem.dataset.quadrantId;
+                    const sortOption = sortMenuItem.dataset.sort;
+                    uiState.sortOptions[quadrantId] = sortOption;
+                    saveData();
+                    renderTasks();
+                    sortMenuItem.closest('.sort-menu').classList.add('hidden');
+                    return;
+                }
+
+                // Hide open sort menus if clicking elsewhere
+                if (!sortBtn) {
+                    document.querySelectorAll('.sort-menu').forEach(menu => menu.classList.add('hidden'));
+                }
 
                 if (addTaskBtn) {
                     document.querySelectorAll('.add-task-form').forEach(form => form.classList.add('hidden'));
@@ -1110,15 +1138,6 @@
                     } else if (!e.target.matches('input, button, svg, path')) {
                         openTaskDetailsModal(quadrantId, index);
                     }
-                }
-            });
-
-            document.body.addEventListener('change', e => {
-                 if (e.target.matches('.sort-tasks-select')) {
-                    const quadrantId = e.target.dataset.quadrantId;
-                    uiState.sortOptions[quadrantId] = e.target.value;
-                    saveData();
-                    renderTasks();
                 }
             });
             
