@@ -1,660 +1,1033 @@
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
-    />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>time.fyi - daily planner</title>
-    <meta
-      name="description"
-      content="Daily planner by time.fyi is a free tool to help you plan your days and weeks and boost your productivity."
-    />
-    <link rel="stylesheet" href="css/daily-planner.css" />
-  </head>
-  <body class="bg-black text-gray-100">
-    <main class="relative mx-auto min-h-screen">
-      <div class="flex min-h-screen flex-row">
-        <div
-          class="relative hidden min-h-full flex-shrink-0 flex-col items-center border-r border-r-zinc-800 bg-zinc-900 pt-4 sm:flex"
-        >
-          <button
-            class="mx-3 mb-3 rounded-lg bg-zinc-800 p-1 text-zinc-200 opacity-50 hover:opacity-100"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="lucide lucide-chevron-right h-[15px] w-[15px]"
-            >
-              <path d="m9 18 6-6-6-6"></path>
-            </svg></button
-          ><a
-            href="https://time.fyi/daily-planner"
-            class="group pointer relative flex w-full items-center gap-2 px-3 py-2 hover:opacity-100 text-yellow-400 opacity-100 hover:text-yellow-400"
-            ><span class="relative"
-              ><svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 48 48"
-                id="Calendar-Check--Streamline-Ultimate"
-                height="48"
-                width="48"
-                class="h-[20px] w-[20px]"
-              >
-                <g>
-                  <path
-                    d="M43 6h-5.5a0.5 0.5 0 0 1 -0.5 -0.5V2a2 2 0 0 0 -4 0v9.5a1.5 1.5 0 0 1 -3 0V7a1 1 0 0 0 -1 -1H16.5A0.5 0.5 0 0 1 16 5.5V2a2 2 0 0 0 -4 0v9.5a1.5 1.5 0 0 1 -3 0V7A1 1 0 0 0 8 6H5a4 4 0 0 0 -4 4v34a4 4 0 0 0 4 4h38a4 4 0 0 0 4 -4V10a4 4 0 0 0 -4 -4Zm0 37a1 1 0 0 1 -1 1H6a1 1 0 0 1 -1 -1v-24A1 1 0 0 1 6 18h36a1 1 0 0 1 1 1Z"
-                    fill="currentColor"
-                    stroke-width="1"
-                  ></path>
-                  <path
-                    d="M24 21a10 10 0 1 0 10 10 10 10 0 0 0 -10 -10Zm5.66 8 -4.84 6.44a2.76 2.76 0 0 1 -4.16 0.3l-2.5 -2.5a1.5 1.5 0 1 1 2.12 -2.12l2.3 2.3 4.68 -6.22a1.5 1.5 0 0 1 2.4 1.8Z"
-                    fill="currentColor"
-                    stroke-width="1"
-                  ></path>
-                </g></svg></span
-            ><span
-              class="pointer-events-none absolute z-[99999] block w-max transform rounded-md px-2 py-1 font-medium opacity-0 shadow-sm duration-100 group-hover:opacity-100 left-full top-1/2 -translate-y-1/2 -translate-x-1.5 bg-zinc-400 text-xs text-zinc-700"
-              ><span class="flex items-center gap-1">Daily Planner</span></span
-            ></a
-          ><button
-            class="group relative mb-4 mt-auto flex w-full items-center gap-2 px-3 py-2 text-zinc-300 opacity-60 outline-none hover:text-zinc-400 hover:opacity-100"
-            type="button"
-            id="radix-:r1r1:"
-            aria-haspopup="menu"
-            aria-expanded="false"
-            data-state="closed"
-          >
-            <div
-              class="flex items-center justify-center rounded-full bg-neutral-600 uppercase text-neutral-100 size-5 text-sm"
-            >
-              P
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eisenhower Planner</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Using the Inter font for a clean look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        // Explicitly tell Tailwind to use the 'class' strategy for dark mode.
+        tailwind.config = {
+            darkMode: 'class'
+        }
+        // Set theme on initial load based on user preference or system settings
+        if (localStorage.theme === 'light' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: light)').matches)) {
+            document.documentElement.classList.remove('dark')
+        } else {
+            document.documentElement.classList.add('dark')
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .tasks-container::-webkit-scrollbar, .subtasks-container::-webkit-scrollbar, #attachments-container::-webkit-scrollbar { width: 4px; }
+        .tasks-container::-webkit-scrollbar-thumb, .subtasks-container::-webkit-scrollbar-thumb, #attachments-container::-webkit-scrollbar-thumb { background-color: #4b5563; border-radius: 20px; }
+        .tasks-container, .subtasks-container, #attachments-container { scrollbar-width: thin; scrollbar-color: #4b5563 #1f2937; }
+        .task-checkbox:checked + .task-text, .subtask-checkbox:checked + .subtask-text { text-decoration: line-through; }
+        .dark .task-checkbox:checked + .task-text, .dark .subtask-checkbox:checked + .subtask-text { color: #6b7280; }
+        .light .task-checkbox:checked + .task-text, .light .subtask-checkbox:checked + .subtask-text { color: #9ca3af; }
+
+        .focus-ring { @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500; }
+        .dark .focus-ring { @apply focus:ring-offset-gray-900; }
+        .light .focus-ring { @apply focus:ring-offset-gray-100; }
+
+        .workspace-menu-item-group:hover .sidebar-item-actions { opacity: 1; }
+        .task-item:hover .task-actions { opacity: 1; }
+        .subtask-item:hover .subtask-actions { opacity: 1; }
+        .attachment-item:hover .attachment-actions { opacity: 1; }
+        .task-item.dragging, .subtask-item.dragging { opacity: 0.5; }
+
+        .drag-over { border-style: dashed !important; }
+        .dark .drag-over { background-color: #374151 !important; }
+        .light .drag-over { background-color: #e5e7eb !important; }
+
+        .task-drag-over-top { border-top: 2px solid #3b82f6; }
+        .task-drag-over-bottom { border-bottom: 2px solid #3b82f6; }
+        .subtask-drag-over-top { border-top: 2px solid #3b82f6; }
+        .subtask-drag-over-bottom { border-bottom: 2px solid #3b82f6; }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-300 antialiased">
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- Simplified Sidebar -->
+        <aside class="w-20 flex-shrink-0 bg-gray-200 dark:bg-gray-800 p-4 border-r border-gray-300 dark:border-gray-700 flex flex-col items-center gap-y-6">
+             <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                 <svg class="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             </div>
-            <span
-              class="pointer-events-none absolute z-[99999] block w-max transform rounded-md px-2 py-1 font-medium opacity-0 shadow-sm duration-100 group-hover:opacity-100 left-full top-1/2 -translate-y-1/2 -translate-x-1.5 bg-zinc-400 text-xs text-zinc-700"
-            >
-              Account
-            </span>
-          </button>
-        </div>
-        <div class="flex flex-grow flex-col bg-black">
-          <div
-            class="flex min-h-[33px] justify-between gap-2.5 border-b border-b-zinc-800 bg-zinc-900 text-xs sm:gap-0"
-          >
-            <div class="flex items-stretch">
-              <button
-                class="block bg-zinc-800 px-2 hover:bg-zinc-700 sm:hidden"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="13"
-                  height="13"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="lucide lucide-menu"
-                >
-                  <line x1="4" x2="20" y1="12" y2="12"></line>
-                  <line x1="4" x2="20" y1="6" y2="6"></line>
-                  <line x1="4" x2="20" y1="18" y2="18"></line></svg
-                ><span class="sr-only">Menu</span>
-              </button>
-              <div
-                class="flex items-center rounded-lg px-3 text-sm text-zinc-500"
-              >
-                <span class="hidden md:block">Daily Planner</span>
-                <div class="flex flex-row items-center gap-[1.5px]">
-                  <span
-                    class="mx-2 hidden text-xs font-semibold opacity-30 md:block"
-                    >/</span
-                  >
-                  <div class="relative">
-                    <button
-                      class="flex items-center gap-1.5 rounded-md px-1.5 py-0.5 hover:bg-zinc-700/70 hover:text-zinc-400"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="13"
-                        height="13"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        class="lucide lucide-folder fill-current"
-                      >
-                        <path
-                          d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"
-                        ></path></svg
-                      >Personal<svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="13"
-                        height="13"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        class="lucide lucide-chevron-down -ml-0.5"
-                      >
-                        <path d="m6 9 6 6 6-6"></path>
-                      </svg>
-                    </button>
-                  </div>
-                  <div class="relative">
-                    <button
-                      class="flex items-center gap-1.5 rounded-md px-1.5 py-0.5 hover:bg-zinc-700/70 hover:text-zinc-400"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="13"
-                        height="13"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        class="lucide lucide-package"
-                      >
-                        <path d="m7.5 4.27 9 5.15"></path>
-                        <path
-                          d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"
-                        ></path>
-                        <path d="m3.3 7 8.7 5 8.7-5"></path>
-                        <path d="M12 22V12"></path></svg
-                      >General<svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="13"
-                        height="13"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        class="lucide lucide-chevron-down -ml-0.5"
-                      >
-                        <path d="m6 9 6 6 6-6"></path>
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="flex text-sm">
-              <a
-                href="mailto:kamranahmed.se@gmail.com"
-                class="hidden items-center overflow-hidden px-2 text-sm text-zinc-500 hover:bg-zinc-800 lg:flex"
-                ><svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="13"
-                  height="13"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="lucide lucide-mail flex-shrink-0"
-                >
-                  <rect width="20" height="16" x="2" y="4" rx="2"></rect>
-                  <path
-                    d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"
-                  ></path></svg
-                ><span class="ml-1.5 hidden sm:inline-block">Feedback</span></a
-              >
-              <div class="relative hidden md:block">
-                <button
-                  class="flex h-full items-center pl-2 pr-2.5 text-sm text-zinc-500 hover:bg-zinc-800"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="13"
-                    height="13"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="lucide lucide-music2"
-                  >
-                    <circle cx="8" cy="18" r="4"></circle>
-                    <path d="M12 18V2l7 4"></path></svg
-                  ><span class="ml-1.5 hidden sm:inline">Focus</span>
-                </button>
-              </div>
-              <span
-                class="hidden items-center overflow-hidden px-3 text-sm transition-all duration-200 sm:flex"
-                ><span
-                  ><span class="tabular-nums">12</span
-                  ><span class="mx-0.5 animate-show-hide font-serif">:</span
-                  ><span class="tabular-nums">26</span
-                  ><span class="ml-1 text-gray-500">PM</span></span
-                ></span
-              ><button
-                class="relative z-20 hidden w-12 font-sans text-sm font-medium text-neutral-400 transition-colors duration-300 sm:inline-block bg-zinc-800 hover:bg-zinc-700"
-              >
-                <span class="tabular-nums">12</span
-                ><span class="ml-[2px] font-medium">hr</span>
-              </button>
-            </div>
-          </div>
-          <div class="relative flex flex-grow flex-row">
-            <div class="m-4 flex flex-grow flex-col gap-4">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <button
-                    class="flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-sm font-medium border-yellow-400 bg-yellow-400 text-black hover:bg-yellow-400 hover:text-black"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      class="lucide lucide-calendar-check"
-                    >
-                      <path d="M8 2v4"></path>
-                      <path d="M16 2v4"></path>
-                      <rect width="18" height="18" x="3" y="4" rx="2"></rect>
-                      <path d="M3 10h18"></path>
-                      <path d="m9 16 2 2 4-4"></path></svg
-                    ><span class="hidden items-center gap-1.5 sm:inline-flex"
-                      >Daily Planner</span
-                    ></button
-                  ><button
-                    class="flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900 px-2.5 py-1.5 text-sm font-medium text-zinc-400 hover:bg-zinc-800 hover:text-zinc-300"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      class="lucide lucide-repeat"
-                    >
-                      <path d="m17 2 4 4-4 4"></path>
-                      <path d="M3 11v-1a4 4 0 0 1 4-4h14"></path>
-                      <path d="m7 22-4-4 4-4"></path>
-                      <path d="M21 13v1a4 4 0 0 1-4 4H3"></path></svg
-                    ><span class="hidden items-center gap-1.5 sm:inline-flex"
-                      >Routine</span
-                    ></button
-                  ><button
-                    class="flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900 px-2.5 py-1.5 text-sm font-medium text-zinc-400 hover:bg-zinc-800 hover:text-zinc-300"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      class="lucide lucide-square-check-big"
-                    >
-                      <path d="m9 11 3 3L22 4"></path>
-                      <path
-                        d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"
-                      ></path></svg
-                    ><span class="hidden items-center gap-1.5 sm:inline-flex"
-                      >Task Dump</span
-                    >
-                  </button>
-                </div>
-                <div class="flex">
-                  <button
-                    class="mr-2 flex items-center justify-between gap-1.5 rounded-md bg-zinc-800 px-3 py-1.5 text-sm text-zinc-400 outline-none hover:bg-zinc-700 hover:text-zinc-200 focus-visible:shadow-[0_0_0_1px] focus-visible:shadow-zinc-900"
-                  >
-                    Today
-                  </button>
-                  <div class="react-datepicker-wrapper">
-                    <div class="react-datepicker__input-container">
-                      <button
-                        class="mr-2 flex h-[32px] items-center rounded-md bg-zinc-800 px-3 py-1.5 text-sm text-zinc-400 outline-none hover:bg-zinc-700 hover:text-zinc-200 focus-visible:shadow-[0_0_0_1px] focus-visible:shadow-zinc-900"
-                        value="06/15/2025"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="18"
-                          height="18"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          class="lucide lucide-calendar"
-                        >
-                          <path d="M8 2v4"></path>
-                          <path d="M16 2v4"></path>
-                          <rect
-                            width="18"
-                            height="18"
-                            x="3"
-                            y="4"
-                            rx="2"
-                          ></rect>
-                          <path d="M3 10h18"></path>
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                  <button
-                    class="rounded-md p-1 text-zinc-600 hover:bg-zinc-700 hover:text-zinc-300"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      class="lucide lucide-chevron-left"
-                    >
-                      <path d="m15 18-6-6 6-6"></path>
-                    </svg></button
-                  ><button
-                    class="rounded-md p-1 text-zinc-600 hover:bg-zinc-700 hover:text-zinc-300"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      class="lucide lucide-chevron-right"
-                    >
-                      <path d="m9 18 6-6-6-6"></path>
-                    </svg>
-                  </button>
-                </div>
-              </div>
-              <div
-                class="grid flex-grow gap-4 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4"
-              >
-                <div
-                  class="relative flex min-h-[400px] flex-grow flex-col overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900 px-4 pb-4"
-                >
-                  <h3
-                    class="flex justify-between py-4 text-xs uppercase tracking-[0.15em] text-zinc-500"
-                  >
-                    <span class="hidden sm:inline">Important &amp; Urgent</span
-                    ><span class="inline sm:hidden">Sat, 14 Jun</span>
-                  </h3>
-                  <div class="relative -mx-3 flex flex-grow flex-col">
-                    <div
-                      class="custom-scrollbar relative flex flex-grow flex-col overflow-y-scroll"
-                    >
-                      <div class="absolute inset-0 flex flex-col gap-5 px-3">
-                        <div class="flex-grow pb-10">
-                          <div
-                            id="planned-tasks-2025-06-14T00:00:00.000+07:00"
-                            data-date="2025-06-14"
-                          >
-                            <div
-                              class="absolute inset-0 flex flex-1 flex-grow flex-col items-center justify-center gap-1 text-sm text-zinc-600"
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                class="lucide lucide-square-check-big mb-3 flex h-[45px] w-[45px] flex-shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-800"
-                              >
-                                <path d="m9 11 3 3L22 4"></path>
-                                <path
-                                  d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"
-                                ></path>
-                              </svg>
-                              <p>No tasks for this day</p>
-                              <p>
-                                <button
-                                  class="text-zinc-500 underline underline-offset-2 hover:text-zinc-300"
-                                >
-                                  Add a new task
-                                </button>
-                              </p>
-                            </div>
-                          </div>
+             <button id="theme-toggle-btn" class="p-2 rounded-md bg-gray-300 dark:bg-gray-700/50 text-gray-700 dark:text-yellow-400 focus-ring">
+                 <svg id="theme-icon-sun" class="h-6 w-6 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                 <svg id="theme-icon-moon" class="h-6 w-6 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+             </button>
+             <button class="p-2 rounded-md hover:bg-gray-300 dark:hover:bg-gray-700/50 text-gray-500 dark:text-gray-400 focus-ring">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+             </button>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="bg-gray-100 dark:bg-gray-900 border-b border-gray-300 dark:border-gray-700 px-6 py-3 flex items-center justify-between flex-shrink-0">
+                 <!-- Workspace Manager / Breadcrumbs -->
+                 <div id="workspace-manager" class="flex-grow flex items-center gap-2 text-lg"></div>
+                 <div class="flex items-center gap-4">
+                     <span class="text-sm font-medium text-gray-500 dark:text-gray-400" id="current-date"></span>
+                 </div>
+            </header>
+            
+            <main class="flex-1 overflow-y-auto p-4 sm:p-6">
+                <div class="flex gap-6 h-full">
+                    <!-- Unsorted Column Wrapper -->
+                    <div id="unsorted-column-wrapper" class="flex-shrink-0 h-full transition-all duration-300 ease-in-out">
+                        <div id="unsorted-container" class="w-full h-full">
+                            <!-- Quadrant will be rendered here by renderQuadrants() -->
                         </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="relative flex min-h-[400px] flex-grow flex-col overflow-hidden rounded-2xl border bg-zinc-900 px-4 pb-4 border-yellow-400"
-                >
-                  <h3
-                    class="flex justify-between py-4 text-xs uppercase tracking-[0.15em] text-zinc-500"
-                  >
-                    <span class="hidden sm:inline"
-                      >Important &amp; Not Urgent</span
-                    ><span class="inline sm:hidden">Sun, 15 Jun</span
-                    ><span class="ml-2 text-yellow-400">Today</span>
-                  </h3>
-                  <div class="relative -mx-3 flex flex-grow flex-col">
-                    <div
-                      class="custom-scrollbar relative flex flex-grow flex-col overflow-y-scroll"
-                    >
-                      <div class="absolute inset-0 flex flex-col gap-5 px-3">
-                        <div class="flex-grow pb-10">
-                          <div class="z-10 mb-2 relative -mx-3">
-                            <button
-                              class="flex w-full items-center justify-between bg-zinc-800 px-4 py-2.5 text-sm text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-300"
-                            >
-                              <span
-                                >Previous Pending Tasks
-                                <span
-                                  class="ml-1 rounded-full bg-zinc-700 px-1.5 py-0.5 text-xs"
-                                  >6</span
-                                ></span
-                              ><svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                class="lucide lucide-chevron-down flex h-[15px] w-[15px] flex-shrink-0 cursor-pointer items-center justify-center rounded-md hover:border-zinc-400"
-                              >
-                                <path d="m6 9 6 6 6-6"></path>
-                              </svg>
+                        <div id="expand-unsorted-container" class="h-full hidden items-center justify-center">
+                            <button id="expand-unsorted-btn" title="Show Unsorted Tasks" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 focus-ring">
+                                <svg class="w-6 h-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
                             </button>
-                          </div>
-                          <div
-                            id="planned-tasks-2025-06-15T00:00:00.000+07:00"
-                            data-date="2025-06-15"
-                          >
-                            <div
-                              class="absolute inset-0 flex flex-1 flex-grow flex-col items-center justify-center gap-1 text-sm text-zinc-600"
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                class="lucide lucide-square-check-big mb-3 flex h-[45px] w-[45px] flex-shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-800"
-                              >
-                                <path d="m9 11 3 3L22 4"></path>
-                                <path
-                                  d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"
-                                ></path>
-                              </svg>
-                              <p>No tasks for this day</p>
-                              <p>
-                                <button
-                                  class="text-zinc-500 underline underline-offset-2 hover:text-zinc-300"
-                                >
-                                  Add a new task
-                                </button>
-                              </p>
-                            </div>
-                          </div>
                         </div>
-                      </div>
                     </div>
-                  </div>
+                    <!-- Eisenhower Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 h-full grid-rows-2" id="eisenhower-grid"></div>
                 </div>
-                <div
-                  class="relative flex min-h-[400px] flex-grow flex-col overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900 px-4 pb-4"
-                >
-                  <h3
-                    class="flex justify-between py-4 text-xs uppercase tracking-[0.15em] text-zinc-500"
-                  >
-                    <span class="hidden sm:inline"
-                      >Not Improtant &amp; Urgent</span
-                    ><span class="inline sm:hidden">Mon, 16 Jun</span>
-                  </h3>
-                  <div class="relative -mx-3 flex flex-grow flex-col">
-                    <div
-                      class="custom-scrollbar relative flex flex-grow flex-col overflow-y-scroll"
-                    >
-                      <div class="absolute inset-0 flex flex-col gap-5 px-3">
-                        <div class="flex-grow pb-10">
-                          <div
-                            id="planned-tasks-2025-06-16T00:00:00.000+07:00"
-                            data-date="2025-06-16"
-                          >
-                            <div
-                              class="absolute inset-0 flex flex-1 flex-grow flex-col items-center justify-center gap-1 text-sm text-zinc-600"
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                class="lucide lucide-square-check-big mb-3 flex h-[45px] w-[45px] flex-shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-800"
-                              >
-                                <path d="m9 11 3 3L22 4"></path>
-                                <path
-                                  d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"
-                                ></path>
-                              </svg>
-                              <p>No tasks for this day</p>
-                              <p>
-                                <button
-                                  class="text-zinc-500 underline underline-offset-2 hover:text-zinc-300"
-                                >
-                                  Add a new task
-                                </button>
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="relative flex min-h-[400px] flex-grow flex-col overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900 px-4 pb-4"
-                >
-                  <h3
-                    class="flex justify-between py-4 text-xs uppercase tracking-[0.15em] text-zinc-500"
-                  >
-                    <span class="hidden sm:inline"
-                      >Not Important &amp; Not Urgent</span
-                    >
-                  </h3>
-                  <div class="relative -mx-3 flex flex-grow flex-col">
-                    <div
-                      class="custom-scrollbar relative flex flex-grow flex-col overflow-y-scroll"
-                    >
-                      <div class="absolute inset-0 flex flex-col gap-5 px-3">
-                        <div class="flex-grow pb-10">
-                          <div
-                            id="planned-tasks-2025-06-17T00:00:00.000+07:00"
-                            data-date="2025-06-17"
-                          >
-                            <div
-                              class="absolute inset-0 flex flex-1 flex-grow flex-col items-center justify-center gap-1 text-sm text-zinc-600"
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                class="lucide lucide-square-check-big mb-3 flex h-[45px] w-[45px] flex-shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-800"
-                              >
-                                <path d="m9 11 3 3L22 4"></path>
-                                <path
-                                  d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"
-                                ></path>
-                              </svg>
-                              <p>No tasks for this day</p>
-                              <p>
-                                <button
-                                  class="text-zinc-500 underline underline-offset-2 hover:text-zinc-300"
-                                >
-                                  Add a new task
-                                </button>
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+            </main>
         </div>
-      </div>
-    </main>
-  </body>
+    </div>
+
+    <!-- Modals -->
+    <div id="confirmation-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-xl p-6 w-full max-w-sm">
+            <h3 id="confirmation-title" class="text-lg font-semibold mb-2 text-gray-900 dark:text-white">Are you sure?</h3>
+            <p id="confirmation-message" class="text-gray-600 dark:text-gray-400 mb-6"></p>
+            <div class="flex justify-end gap-3">
+                <button id="confirmation-cancel-btn" class="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 focus-ring">Cancel</button>
+                <button id="confirmation-confirm-btn" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus-ring">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="workspace-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-xl p-6 w-full max-w-md">
+            <h3 id="workspace-modal-title" class="text-lg font-semibold mb-4 text-gray-900 dark:text-white"></h3>
+            <input type="text" id="workspace-input" class="w-full bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 rounded-md p-2 focus-ring" placeholder="Enter workspace name...">
+            <div class="mt-4 flex justify-end gap-3">
+                <button id="workspace-cancel-btn" class="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 focus-ring">Cancel</button>
+                <button id="workspace-save-btn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus-ring">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="task-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-xl p-6 w-full max-w-md">
+            <h3 id="task-modal-title" class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Add a New Task</h3>
+            <input type="text" id="task-input" class="w-full bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 rounded-md p-2 focus-ring" placeholder="Enter your task...">
+            <div class="mt-4 flex justify-end gap-3">
+                <button id="task-cancel-btn" class="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 focus-ring">Cancel</button>
+                <button id="task-save-btn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus-ring">Save Task</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="task-details-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-xl p-6 w-full max-w-lg flex flex-col" style="height: 80vh;">
+            <div class="flex justify-between items-start mb-4">
+                <input type="text" id="task-details-title" class="text-lg font-semibold bg-transparent text-gray-900 dark:text-white w-full focus:outline-none focus:bg-gray-200 dark:focus:bg-gray-700 rounded-md -ml-2 px-2 py-1">
+                <button id="task-details-close-btn" class="p-1 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700">&times;</button>
+            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Description</p>
+            <textarea id="task-details-description" class="w-full bg-gray-200/50 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 rounded-md p-2 focus-ring mb-4" rows="3" placeholder="Add a description..."></textarea>
+            
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Sub-Todos</p>
+            <div id="subtasks-container" class="overflow-y-auto pr-2 space-y-2 subtasks-container mb-4"></div>
+            <form id="add-subtask-form" class="flex gap-2 mb-4">
+                <input type="text" id="subtask-input" class="flex-grow bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 rounded-md p-2 focus-ring" placeholder="Add a sub-todo...">
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus-ring">Add</button>
+            </form>
+
+            <div class="flex justify-between items-center mb-2">
+                 <p class="text-sm text-gray-500 dark:text-gray-400">Attachments</p>
+                 <label for="file-attachment-input" class="cursor-pointer text-sm text-blue-600 dark:text-blue-400 hover:underline">Attach File</label>
+                 <input type="file" id="file-attachment-input" class="hidden">
+            </div>
+            <div id="attachments-container" class="flex-grow overflow-y-auto pr-2 space-y-2 border border-gray-300 dark:border-gray-600 rounded-lg p-2 bg-gray-200/30 dark:bg-gray-900/30"></div>
+        </div>
+    </div>
+    
+    <!-- Media Preview Modal -->
+    <div id="media-preview-modal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl max-h-full p-4 relative flex items-center justify-center">
+             <button id="media-preview-close-btn" class="absolute -top-2 -right-2 w-8 h-8 bg-white dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 focus-ring z-10">&times;</button>
+             <img id="image-preview-element" src="" alt="Image Preview" class="hidden max-w-full max-h-[85vh] object-contain rounded">
+             <video id="video-preview-element" src="" controls class="hidden max-w-full max-h-[85vh] rounded"></video>
+             <audio id="audio-preview-element" src="" controls class="hidden"></audio>
+             <embed id="pdf-preview-element" src="" type="application/pdf" class="hidden w-[80vw] h-[85vh] rounded">
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- IndexedDB ---
+            let db;
+            function initDB() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open('eisenhowerPlannerDB', 1);
+                    request.onerror = event => reject('Database error: ' + event.target.errorCode);
+                    request.onsuccess = event => {
+                        db = event.target.result;
+                        resolve(db);
+                    };
+                    request.onupgradeneeded = event => {
+                        const db = event.target.result;
+                        db.createObjectStore('files', { keyPath: 'id' });
+                    };
+                });
+            }
+
+            function saveFileToDB(fileData) {
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction(['files'], 'readwrite');
+                    const store = transaction.objectStore('files');
+                    const request = store.put(fileData);
+                    request.onsuccess = () => resolve();
+                    request.onerror = event => reject('Error saving file: ' + event.target.error);
+                });
+            }
+
+            function getFileFromDB(id) {
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction(['files'], 'readonly');
+                    const store = transaction.objectStore('files');
+                    const request = store.get(id);
+                    request.onsuccess = event => resolve(event.target.result);
+                    request.onerror = event => reject('Error fetching file: ' + event.target.error);
+                });
+            }
+
+             function deleteFileFromDB(id) {
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction(['files'], 'readwrite');
+                    const store = transaction.objectStore('files');
+                    const request = store.delete(id);
+                    request.onsuccess = () => resolve();
+                    request.onerror = event => reject('Error deleting file: ' + event.target.error);
+                });
+            }
+
+
+            // Main application state
+            let appData = {};
+            let uiState = { 
+                unsortedCollapsed: false
+            };
+            let currentQuadrant = null;
+            let editingWorkspaceId = null;
+            let draggedItem = null;
+            let draggedSubtaskIndex = null;
+            let confirmationCallback = null;
+            let editingTaskLocation = null;
+            let currentPreviewUrl = null;
+
+            // DOM Elements
+            const grid = document.getElementById('eisenhower-grid');
+            const workspaceManager = document.getElementById('workspace-manager');
+            const unsortedColumnWrapper = document.getElementById('unsorted-column-wrapper');
+            const unsortedContainer = document.getElementById('unsorted-container');
+            const expandUnsortedContainer = document.getElementById('expand-unsorted-container');
+            const currentDateEl = document.getElementById('current-date');
+            const themeToggleBtn = document.getElementById('theme-toggle-btn');
+            
+            // Modals and their inputs
+            const taskModal = document.getElementById('task-modal');
+            const taskInput = taskModal.querySelector('#task-input');
+            const workspaceModal = document.getElementById('workspace-modal');
+            const workspaceInput = workspaceModal.querySelector('#workspace-input');
+            const confirmationModal = document.getElementById('confirmation-modal');
+            const taskDetailsModal = document.getElementById('task-details-modal');
+            const fileAttachmentInput = document.getElementById('file-attachment-input');
+            const mediaPreviewModal = document.getElementById('media-preview-modal');
+            const imagePreviewElement = document.getElementById('image-preview-element');
+            const videoPreviewElement = document.getElementById('video-preview-element');
+            const audioPreviewElement = document.getElementById('audio-preview-element');
+            const pdfPreviewElement = document.getElementById('pdf-preview-element');
+
+
+            // --- DATA MANAGEMENT ---
+            const defaultTasks = {
+                'unsorted': [], 'urgent-important': [], 'not-urgent-important': [],
+                'urgent-not-important': [], 'not-urgent-not-important': []
+            };
+
+            function loadData() {
+                const data = JSON.parse(localStorage.getItem('eisenhowerPlannerV5'));
+                if (data && data.workspaces && data.workspaces.length > 0) {
+                    data.workspaces.forEach(ws => {
+                        Object.values(ws.tasks).forEach(quad => {
+                            quad.forEach(task => {
+                                if (task.description === undefined) task.description = '';
+                                if (task.subTasks === undefined) task.subTasks = [];
+                                if (task.attachments === undefined) task.attachments = [];
+                            });
+                        });
+                    });
+                    appData = data;
+                } else {
+                    const defaultId1 = `ws-${Date.now()}`;
+                    appData = {
+                        activeWorkspaceId: defaultId1,
+                        workspaces: [{ id: defaultId1, name: 'Daily Planner', tasks: JSON.parse(JSON.stringify(defaultTasks)) }]
+                    };
+                }
+                const storedUiState = JSON.parse(localStorage.getItem('eisenhowerUiStateV2'));
+                if (storedUiState) {
+                    // Merge saved state with defaults to prevent errors if new properties are added
+                    uiState = {...uiState, ...storedUiState};
+                }
+                saveData();
+            }
+
+            function saveData() {
+                localStorage.setItem('eisenhowerPlannerV5', JSON.stringify(appData));
+                localStorage.setItem('eisenhowerUiStateV2', JSON.stringify(uiState));
+            }
+
+            // --- THEME MANAGEMENT ---
+            function updateTheme() {
+                const isDark = document.documentElement.classList.contains('dark');
+                document.getElementById('theme-icon-sun').classList.toggle('hidden', isDark);
+                document.getElementById('theme-icon-moon').classList.toggle('hidden', !isDark);
+            }
+
+            themeToggleBtn.addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+                localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+                updateTheme();
+            });
+
+            // --- UI STATE MANAGEMENT ---
+            function applyUiState() {
+                if (uiState.unsortedCollapsed) {
+                    unsortedColumnWrapper.style.width = '4rem'; // w-16
+                    unsortedContainer.classList.add('hidden');
+                    expandUnsortedContainer.classList.remove('hidden');
+                    expandUnsortedContainer.classList.add('flex');
+                } else {
+                    unsortedColumnWrapper.style.width = '24rem'; // w-96
+                    unsortedContainer.classList.remove('hidden');
+                    expandUnsortedContainer.classList.add('hidden');
+                    expandUnsortedContainer.classList.remove('flex');
+                }
+            }
+
+            // --- RENDERING ---
+            function renderAll() {
+                renderWorkspaces();
+                renderQuadrants();
+                renderTasks();
+                renderDate();
+                updateTheme();
+                applyUiState();
+            }
+
+            function renderDate() {
+                currentDateEl.textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+            }
+            
+            function renderWorkspaces() {
+                const activeWorkspace = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId);
+                if (!activeWorkspace) {
+                    workspaceManager.innerHTML = '<div class="font-bold text-gray-900 dark:text-white">No Workspace</div>';
+                    return;
+                }
+
+                workspaceManager.innerHTML = `
+                    <span class="font-semibold text-gray-500 dark:text-gray-400">Planner</span>
+                    <span class="text-gray-400 dark:text-gray-500 font-light">&gt;</span>
+                    <div class="relative" id="workspace-dropdown-container">
+                        <button id="workspace-dropdown-btn" class="flex items-center gap-2 rounded-md px-2 py-1 hover:bg-gray-200 dark:hover:bg-gray-700/50 focus-ring">
+                             <span class="font-semibold text-gray-900 dark:text-white">Workspaces</span>
+                            <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                        </button>
+                        <div id="workspace-dropdown-menu" class="hidden absolute left-0 mt-2 w-72 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-xl z-20"></div>
+                    </div>
+                     <span class="text-gray-400 dark:text-gray-500 font-light">&gt;</span>
+                     <span class="font-bold text-gray-900 dark:text-white">${activeWorkspace.name}</span>
+                `;
+                renderWorkspaceDropdown();
+            }
+            
+            function renderWorkspaceDropdown() {
+                const menu = document.getElementById('workspace-dropdown-menu');
+                if(!menu) return;
+                menu.innerHTML = `
+                     <div class="p-2">
+                        <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 px-2 mb-1 uppercase tracking-wider">Switch Workspace</p>
+                        <div id="workspace-dropdown-list" class="flex flex-col gap-1">
+                            ${appData.workspaces.map(ws => `
+                                <div class="workspace-menu-item-group flex items-center justify-between group rounded-md ${ws.id === appData.activeWorkspaceId ? 'bg-blue-600/20 dark:bg-blue-600/30' : 'hover:bg-gray-200 dark:hover:bg-gray-700/50'}">
+                                    <button data-id="${ws.id}" class="workspace-btn flex-grow text-left px-2 py-1.5 text-sm font-medium rounded-l-md ${ws.id === appData.activeWorkspaceId ? 'text-blue-600 dark:text-white' : 'text-gray-800 dark:text-gray-300'}">
+                                        ${ws.name}
+                                    </button>
+                                    <div class="sidebar-item-actions flex items-center pr-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                         <button data-id="${ws.id}" class="edit-workspace-btn p-1.5 rounded hover:bg-gray-300 dark:hover:bg-gray-600/80 focus-ring "><svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg></button>
+                                         ${appData.workspaces.length > 1 ? `<button data-id="${ws.id}" class="delete-workspace-btn p-1.5 rounded hover:bg-gray-300 dark:hover:bg-gray-600/80 focus-ring"><svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>` : ''}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="border-t border-gray-300 dark:border-gray-700 p-2">
+                        <button id="add-workspace-btn-dropdown" class="w-full text-left flex items-center gap-3 px-2 py-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700/50 text-gray-800 dark:text-gray-300 text-sm font-medium focus-ring">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+                            <span>New Workspace</span>
+                        </button>
+                    </div>`;
+            }
+            
+            function renderQuadrants() {
+                const quadrantData = [
+                    { id: 'unsorted', title: 'Unsorted', desc: 'New tasks start here. Drag them.', color: 'gray-500 dark:text-gray-400' },
+                    { id: 'urgent-important', title: 'Urgent & Important', desc: 'Do it now.', color: 'text-red-500 dark:text-red-400' },
+                    { id: 'not-urgent-important', title: 'Not Urgent & Important', desc: 'Schedule it.', color: 'text-blue-500 dark:text-blue-400' },
+                    { id: 'urgent-not-important', title: 'Urgent & Not Important', desc: 'Delegate it.', color: 'text-yellow-500 dark:text-yellow-400' },
+                    { id: 'not-urgent-not-important', title: 'Not Urgent & Not Important', desc: 'Eliminate it.', color: 'text-green-500 dark:text-green-400' }
+                ];
+                
+                grid.innerHTML = '';
+                unsortedContainer.innerHTML = '';
+
+                quadrantData.forEach(q => {
+                    const quadrantEl = document.createElement('div');
+                    quadrantEl.id = q.id;
+                    const isUnsorted = q.id === 'unsorted';
+                    quadrantEl.className = `quadrant-container bg-gray-200/50 dark:bg-gray-800 rounded-2xl border border-gray-300 dark:border-gray-700 p-5 flex flex-col h-full`;
+                    quadrantEl.innerHTML = `
+                        <div class="flex justify-between items-center mb-1">
+                            <h2 class="text-lg font-semibold ${q.color}">${q.title}</h2>
+                            <div class="flex items-center gap-2">
+                                ${isUnsorted ? `<button id="toggle-unsorted-btn" title="Collapse" class="p-1 rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg></button>` : ''}
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-500 dark:text-gray-500 mb-4">${q.desc}</p>
+                        <div class="tasks-container flex-grow overflow-y-auto space-y-2 pr-2"></div>
+                        <button class="add-task-btn mt-4 text-sm font-medium ${q.color.replace('text-', 'hover:text-').replace('-500', '-600').replace('-400', '-300')} self-start focus-ring rounded">Add a task</button>
+                    `;
+                    
+                    if (isUnsorted) {
+                        unsortedContainer.appendChild(quadrantEl);
+                    } else {
+                        grid.appendChild(quadrantEl);
+                    }
+
+                    const tasksContainer = quadrantEl.querySelector('.tasks-container');
+
+                    tasksContainer.addEventListener('dragover', e => {
+                        e.preventDefault();
+                        const target = e.target.closest('.task-item');
+                        document.querySelectorAll('.task-drag-over-top, .task-drag-over-bottom').forEach(el => {
+                           el.classList.remove('task-drag-over-top', 'task-drag-over-bottom');
+                        });
+                        if (target && target !== draggedItem.element) {
+                            const rect = target.getBoundingClientRect();
+                            const midway = rect.top + (rect.height / 2);
+                            if (e.clientY < midway) {
+                                target.classList.add('task-drag-over-top');
+                            } else {
+                                target.classList.add('task-drag-over-bottom');
+                            }
+                        }
+                    });
+
+                     tasksContainer.addEventListener('dragleave', e => {
+                        const relatedTarget = e.relatedTarget;
+                        if (!tasksContainer.contains(relatedTarget)) {
+                           document.querySelectorAll('.task-drag-over-top, .task-drag-over-bottom').forEach(el => {
+                               el.classList.remove('task-drag-over-top', 'task-drag-over-bottom');
+                           });
+                        }
+                    });
+
+                    quadrantEl.addEventListener('dragover', e => { e.preventDefault(); quadrantEl.classList.add('drag-over'); });
+                    quadrantEl.addEventListener('dragleave', () => quadrantEl.classList.remove('drag-over'));
+                    quadrantEl.addEventListener('drop', e => {
+                        e.preventDefault();
+                        quadrantEl.classList.remove('drag-over');
+                        document.querySelectorAll('.task-drag-over-top, .task-drag-over-bottom').forEach(el => {
+                           el.classList.remove('task-drag-over-top', 'task-drag-over-bottom');
+                        });
+
+                        if (!draggedItem) return;
+
+                        const activeWS = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId);
+                        const sourceQuadrantId = draggedItem.quadrantId;
+                        const targetQuadrantId = quadrantEl.id;
+                        const sourceTasks = activeWS.tasks[sourceQuadrantId];
+                        const targetTasks = activeWS.tasks[targetQuadrantId];
+
+                        const taskData = sourceTasks.splice(draggedItem.taskIndex, 1)[0];
+
+                        const targetElement = e.target.closest('.task-item');
+                        let dropIndex = targetTasks.length;
+
+                        if (targetElement) {
+                            const rect = targetElement.getBoundingClientRect();
+                            const midway = rect.top + (rect.height / 2);
+                            dropIndex = parseInt(targetElement.dataset.index);
+                            if (e.clientY > midway) {
+                                dropIndex += 1;
+                            }
+                        }
+                        
+                        if (sourceQuadrantId === targetQuadrantId && draggedItem.taskIndex < dropIndex) {
+                            dropIndex--;
+                        }
+                        
+                        targetTasks.splice(dropIndex, 0, taskData);
+                        
+                        saveData();
+                        renderTasks();
+                        draggedItem = null;
+                    });
+                });
+            }
+
+            function renderTasks() {
+                const activeWorkspace = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId);
+                if (!activeWorkspace) {
+                    grid.innerHTML = ''; unsortedContainer.innerHTML = ''; return;
+                }
+
+                for (const quadrantId in activeWorkspace.tasks) {
+                    const container = document.getElementById(quadrantId);
+                    if (!container) continue;
+                    const tasksContainer = container.querySelector('.tasks-container');
+                    tasksContainer.innerHTML = ''; 
+                    
+                    const taskList = activeWorkspace.tasks[quadrantId];
+
+                    if (taskList.length === 0) {
+                        tasksContainer.innerHTML = `<div class="flex-grow flex flex-col items-center justify-center h-full text-gray-500 dark:text-gray-600 opacity-50"><p class="text-sm font-medium mt-2">No tasks yet</p></div>`;
+                    } else {
+                        taskList.forEach((task, index) => {
+                             tasksContainer.appendChild(createTaskElement(task, quadrantId, index));
+                        });
+                    }
+                }
+            }
+            
+            function createTaskElement(task, quadrantId, index) {
+                const div = document.createElement('div');
+                div.className = 'task-item bg-white dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 p-3 rounded-lg flex items-center justify-between group';
+                div.dataset.quadrant = quadrantId;
+                div.dataset.index = index;
+                div.draggable = true;
+
+                const hasDetails = task.description || (task.subTasks && task.subTasks.length > 0) || (task.attachments && task.attachments.length > 0);
+                const subtaskProgress = (task.subTasks && task.subTasks.length > 0) ? `${task.subTasks.filter(st => st.done).length}/${task.subTasks.length}` : '';
+                const attachmentCount = (task.attachments && task.attachments.length > 0) ? task.attachments.length : 0;
+
+                div.innerHTML = `
+                    <div class="flex items-center gap-3 flex-grow min-w-0">
+                        <input type="checkbox" class="task-checkbox h-4 w-4 rounded border-gray-400 dark:border-gray-500 bg-gray-200 dark:bg-gray-700 text-blue-500 flex-shrink-0">
+                        <div class="flex-grow min-w-0 cursor-pointer">
+                            <p class="task-text text-sm flex-grow truncate ${task.done ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-800 dark:text-gray-200'}">${task.text}</p>
+                            ${hasDetails ? `
+                            <div class="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-500 mt-1">
+                                ${subtaskProgress ? `
+                                <span class="flex items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm2-1a1 1 0 00-1 1v2h12V5a1 1 0 00-1-1H5zM4 9v6a1 1 0 001 1h10a1 1 0 001-1V9H4z" clip-rule="evenodd" /></svg>
+                                    <span>${subtaskProgress}</span>
+                                </span>` : ''}
+                                 ${attachmentCount > 0 ? `
+                                <span class="flex items-center gap-1">
+                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a3 3 0 106 0V7a1 1 0 112 0v4a5 5 0 11-10 0V7a3 3 0 013-3z" clip-rule="evenodd" /></svg>
+                                     <span>${attachmentCount}</span>
+                                </span>` : ''}
+                            </div>` : ''}
+                        </div>
+                    </div>
+                    <div class="task-actions flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 pl-2">
+                        <button class="delete-btn p-1"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-gray-500 dark:text-gray-400 hover:text-red-400"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+                    </div>`;
+                
+                div.querySelector('.task-checkbox').checked = task.done;
+                div.addEventListener('dragstart', (e) => {
+                    if (e.target.matches('input, button, svg, path')) { e.preventDefault(); return; }
+                    draggedItem = { workspaceId: appData.activeWorkspaceId, quadrantId, taskIndex: index, element: e.target };
+                    e.dataTransfer.effectAllowed = 'move';
+                    setTimeout(() => div.classList.add('dragging'), 0);
+                });
+                div.addEventListener('dragend', () => div.classList.remove('dragging'));
+                return div;
+            };
+
+            // --- MODAL HANDLING ---
+            function openConfirmationModal(message, onConfirm) {
+                confirmationModal.querySelector('#confirmation-message').textContent = message;
+                confirmationModal.classList.remove('hidden');
+                confirmationCallback = onConfirm;
+            }
+            function closeConfirmationModal() { confirmationModal.classList.add('hidden'); confirmationCallback = null; }
+
+            function openSimpleTaskModal(quadrant) {
+                taskInput.value = ''; // Clear previous input
+                taskModal.classList.remove('hidden'); 
+                taskInput.focus(); 
+                currentQuadrant = quadrant;
+            };
+            function closeSimpleTaskModal() { 
+                taskModal.classList.add('hidden');
+                taskInput.value = ''; // Ensure cleared on close
+            };
+
+            function openWorkspaceModal(id = null) {
+                workspaceInput.value = '';
+                workspaceModal.classList.remove('hidden'); workspaceInput.focus(); editingWorkspaceId = id;
+                if (id) {
+                    workspaceModal.querySelector('#workspace-modal-title').textContent = 'Edit Workspace';
+                    workspaceInput.value = appData.workspaces.find(ws => ws.id === id).name;
+                } else {
+                    workspaceModal.querySelector('#workspace-modal-title').textContent = 'Add New Workspace';
+                }
+            };
+            function closeWorkspaceModal() { workspaceModal.classList.add('hidden'); };
+
+            // --- TASK DETAILS MODAL ---
+            function openTaskDetailsModal(quadrantId, index) {
+                editingTaskLocation = { quadrantId, index };
+                const task = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId).tasks[quadrantId][index];
+                
+                taskDetailsModal.querySelector('#task-details-title').value = task.text;
+                taskDetailsModal.querySelector('#task-details-description').value = task.description;
+                renderSubTasks(task.subTasks);
+                renderAttachments(task.attachments);
+
+                taskDetailsModal.classList.remove('hidden');
+            }
+
+            function closeTaskDetailsModal() {
+                if (editingTaskLocation) {
+                    const { quadrantId, index } = editingTaskLocation;
+                    const activeWS = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId);
+                    if(activeWS.tasks[quadrantId] && activeWS.tasks[quadrantId][index]) {
+                       const task = activeWS.tasks[quadrantId][index];
+                       task.text = taskDetailsModal.querySelector('#task-details-title').value.trim();
+                       task.description = taskDetailsModal.querySelector('#task-details-description').value.trim();
+                       saveData();
+                       renderTasks();
+                    }
+                }
+                taskDetailsModal.classList.add('hidden');
+                editingTaskLocation = null;
+            }
+            
+            function renderSubTasks(subTasks) {
+                const container = taskDetailsModal.querySelector('#subtasks-container');
+                container.innerHTML = '';
+                if (!subTasks || subTasks.length === 0) {
+                    container.innerHTML = `<div class="text-center text-gray-500 py-4">No sub-todos yet.</div>`;
+                    return;
+                }
+                subTasks.forEach((subtask, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'subtask-item flex items-center gap-3 bg-gray-200/60 dark:bg-gray-700/50 p-2 rounded-md group';
+                    div.dataset.index = index;
+                    div.draggable = true;
+                    div.innerHTML = `
+                        <svg class="w-4 h-4 text-gray-400 cursor-grab flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                        <input type="checkbox" class="subtask-checkbox h-4 w-4 rounded border-gray-400 dark:border-gray-500 bg-gray-300 dark:bg-gray-700 text-blue-500 flex-shrink-0" ${subtask.done ? 'checked' : ''}>
+                        <span class="subtask-text flex-grow ${subtask.done ? 'line-through text-gray-500' : 'text-gray-800 dark:text-gray-200'}">${subtask.text}</span>
+                        <div class="subtask-actions opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button class="delete-subtask-btn p-1 text-gray-500 hover:text-red-400">&times;</button>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            }
+
+            function renderAttachments(attachments) {
+                const container = taskDetailsModal.querySelector('#attachments-container');
+                container.innerHTML = '';
+                 if (!attachments || attachments.length === 0) {
+                    container.innerHTML = `<div class="text-center text-gray-500 py-4">No files attached.</div>`;
+                    return;
+                }
+                attachments.forEach((file) => {
+                    const div = document.createElement('div');
+                    div.className = 'attachment-item flex items-center justify-between bg-gray-200/60 dark:bg-gray-700/50 p-2 rounded-md group';
+                    
+                    const isViewable = file.type.startsWith('image/') || file.type.startsWith('video/') || file.type.startsWith('audio/') || file.type === 'application/pdf';
+
+                    div.innerHTML = `
+                        <span class="text-gray-800 dark:text-gray-200 truncate text-sm flex-grow" title="${file.name}">${file.name}</span>
+                        <div class="attachment-actions flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                             <button data-file-id="${file.id}" data-file-name="${file.name}" data-file-type="${file.type}" class="open-attachment-btn px-2 py-1 text-xs text-blue-600 dark:text-blue-400 hover:underline">${isViewable ? 'Preview' : 'Download'}</button>
+                             <button data-file-id="${file.id}" class="delete-attachment-btn p-1 text-gray-500 hover:text-red-400">&times;</button>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            }
+
+            // --- EVENT LISTENERS ---
+
+            // Task Details Modal Listeners
+            taskDetailsModal.addEventListener('click', async e => {
+                if(!editingTaskLocation) return;
+                const { quadrantId, index } = editingTaskLocation;
+                const activeWS = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId);
+                if (!activeWS) return;
+                const task = activeWS.tasks[quadrantId][index];
+                if(!task) return;
+
+
+                if(e.target.matches('.subtask-checkbox')) {
+                    const subtaskIndex = e.target.closest('.subtask-item').dataset.index;
+                    task.subTasks[subtaskIndex].done = e.target.checked;
+                    task.done = task.subTasks.length > 0 && task.subTasks.every(st => st.done);
+                    saveData();
+                    renderSubTasks(task.subTasks);
+                    renderTasks();
+                }
+                if(e.target.matches('.delete-subtask-btn')) {
+                    const subtaskIndex = e.target.closest('.subtask-item').dataset.index;
+                    task.subTasks.splice(subtaskIndex, 1);
+                    task.done = task.subTasks.length > 0 && task.subTasks.every(st => st.done);
+                    saveData();
+                    renderSubTasks(task.subTasks);
+                    renderTasks();
+                }
+                if(e.target.matches('.delete-attachment-btn')) {
+                    const fileId = e.target.dataset.fileId;
+                    const attachmentIndex = task.attachments.findIndex(att => att.id === fileId);
+                    if (attachmentIndex > -1) {
+                        task.attachments.splice(attachmentIndex, 1);
+                        await deleteFileFromDB(fileId); // Clean up DB
+                        saveData();
+                        renderAttachments(task.attachments);
+                        renderTasks();
+                    }
+                }
+                if (e.target.matches('.open-attachment-btn')) {
+                    const fileId = e.target.dataset.fileId;
+                    const fileName = e.target.dataset.fileName;
+                    const fileType = e.target.dataset.fileType;
+                    const fileRecord = await getFileFromDB(fileId);
+
+                    if (fileRecord && fileRecord.data) {
+                        closeMediaPreview(); // Close any existing preview
+                        currentPreviewUrl = URL.createObjectURL(fileRecord.data);
+
+                        const isViewableInModal = fileType.startsWith('image/') || fileType.startsWith('video/') || fileType.startsWith('audio/') || fileType === 'application/pdf';
+
+                        if (isViewableInModal) {
+                            // Show the correct preview element
+                            imagePreviewElement.classList.add('hidden');
+                            videoPreviewElement.classList.add('hidden');
+                            audioPreviewElement.classList.add('hidden');
+                            pdfPreviewElement.classList.add('hidden');
+
+                            if (fileType.startsWith('image/')) {
+                                imagePreviewElement.src = currentPreviewUrl;
+                                imagePreviewElement.classList.remove('hidden');
+                            } else if (fileType.startsWith('video/')) {
+                                videoPreviewElement.src = currentPreviewUrl;
+                                videoPreviewElement.classList.remove('hidden');
+                            } else if (fileType.startsWith('audio/')) {
+                                audioPreviewElement.src = currentPreviewUrl;
+                                audioPreviewElement.classList.remove('hidden');
+                            } else if (fileType === 'application/pdf') {
+                                pdfPreviewElement.src = currentPreviewUrl;
+                                pdfPreviewElement.classList.remove('hidden');
+                            }
+                            mediaPreviewModal.classList.remove('hidden');
+                        } else {
+                            // If not viewable, download it
+                            const a = document.createElement('a');
+                            a.href = currentPreviewUrl;
+                            a.download = fileName;
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(currentPreviewUrl);
+                            currentPreviewUrl = null;
+                        }
+                    }
+                }
+            });
+
+            fileAttachmentInput.addEventListener('change', async e => {
+                if (!editingTaskLocation || !e.target.files[0]) return;
+                const file = e.target.files[0];
+                const { quadrantId, index } = editingTaskLocation;
+                const task = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId).tasks[quadrantId][index];
+                
+                if (!task.attachments) task.attachments = [];
+                
+                const fileId = `file-${Date.now()}-${Math.random()}`;
+                
+                // Save file to IndexedDB
+                await saveFileToDB({ id: fileId, data: file });
+
+                // Store only a reference in localStorage
+                task.attachments.push({
+                    id: fileId,
+                    name: file.name,
+                    type: file.type,
+                });
+                
+                saveData();
+                renderAttachments(task.attachments);
+                renderTasks();
+                
+                e.target.value = ''; // Reset input
+            });
+
+
+            // Subtask Drag and Drop
+            const subtasksContainer = taskDetailsModal.querySelector('#subtasks-container');
+            subtasksContainer.addEventListener('dragstart', e => {
+                if (e.target.matches('.subtask-item')) {
+                    draggedSubtaskIndex = parseInt(e.target.dataset.index);
+                    e.target.classList.add('dragging');
+                }
+            });
+
+            subtasksContainer.addEventListener('dragend', e => {
+                if (e.target.matches('.subtask-item')) {
+                    e.target.classList.remove('dragging');
+                    draggedSubtaskIndex = null;
+                }
+            });
+
+            subtasksContainer.addEventListener('dragover', e => {
+                e.preventDefault();
+                const target = e.target.closest('.subtask-item');
+                if (!target || draggedSubtaskIndex === null) return;
+                
+                document.querySelectorAll('.subtask-drag-over-top, .subtask-drag-over-bottom').forEach(el => {
+                    el.classList.remove('subtask-drag-over-top', 'subtask-drag-over-bottom');
+                });
+                
+                const rect = target.getBoundingClientRect();
+                const midway = rect.top + (rect.height / 2);
+
+                if (e.clientY < midway) {
+                    target.classList.add('subtask-drag-over-top');
+                } else {
+                    target.classList.add('subtask-drag-over-bottom');
+                }
+            });
+
+             subtasksContainer.addEventListener('dragleave', e => {
+                const relatedTarget = e.relatedTarget;
+                if (!subtasksContainer.contains(relatedTarget)) {
+                    document.querySelectorAll('.subtask-drag-over-top, .subtask-drag-over-bottom').forEach(el => {
+                        el.classList.remove('subtask-drag-over-top', 'subtask-drag-over-bottom');
+                    });
+                }
+            });
+
+
+            subtasksContainer.addEventListener('drop', e => {
+                e.preventDefault();
+                if (draggedSubtaskIndex === null) return;
+                
+                document.querySelectorAll('.subtask-drag-over-top, .subtask-drag-over-bottom').forEach(el => {
+                    el.classList.remove('subtask-drag-over-top', 'subtask-drag-over-bottom');
+                });
+
+                const targetElement = e.target.closest('.subtask-item');
+                if (!targetElement) return;
+
+                const { quadrantId, index } = editingTaskLocation;
+                const task = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId).tasks[quadrantId][index];
+
+                const draggedSubtask = task.subTasks.splice(draggedSubtaskIndex, 1)[0];
+                let dropIndex = parseInt(targetElement.dataset.index);
+                
+                const rect = targetElement.getBoundingClientRect();
+                const midway = rect.top + (rect.height / 2);
+                 if (e.clientY > midway) {
+                    dropIndex += 1;
+                }
+
+                if (draggedSubtaskIndex < dropIndex) {
+                   dropIndex--;
+                }
+
+                task.subTasks.splice(dropIndex, 0, draggedSubtask);
+                saveData();
+                renderSubTasks(task.subTasks);
+            });
+
+            document.getElementById('add-subtask-form').addEventListener('submit', e => {
+                e.preventDefault();
+                 if(!editingTaskLocation) return;
+                const { quadrantId, index } = editingTaskLocation;
+                const task = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId).tasks[quadrantId][index];
+                
+                const input = document.getElementById('subtask-input');
+                const text = input.value.trim();
+                if(text) {
+                    if (!task.subTasks) task.subTasks = [];
+                    task.subTasks.push({ text, done: false });
+                    input.value = '';
+                    saveData();
+                    renderSubTasks(task.subTasks);
+                    renderTasks();
+                }
+            });
+
+            // Global Click Listener
+            document.body.addEventListener('click', e => {
+                const dropdownContainer = document.getElementById('workspace-dropdown-container');
+                const dropdownMenu = document.getElementById('workspace-dropdown-menu');
+
+                if (e.target.closest('#workspace-dropdown-btn')) {
+                    dropdownMenu?.classList.toggle('hidden');
+                } else if (dropdownContainer && !dropdownContainer.contains(e.target)) {
+                    dropdownMenu?.classList.add('hidden');
+                }
+
+                if (e.target.closest('#toggle-unsorted-btn')) {
+                    uiState.unsortedCollapsed = true;
+                    saveData();
+                    applyUiState();
+                    return;
+                }
+
+                if (e.target.closest('#expand-unsorted-btn')) {
+                    uiState.unsortedCollapsed = false;
+                    saveData();
+                    applyUiState();
+                    return;
+                }
+
+                const workspaceBtn = e.target.closest('.workspace-btn');
+                const editWsBtn = e.target.closest('.edit-workspace-btn');
+                const deleteWsBtn = e.target.closest('.delete-workspace-btn');
+                const addWsBtn = e.target.closest('#add-workspace-btn-dropdown');
+                const addTaskBtn = e.target.closest('.add-task-btn');
+                const taskItem = e.target.closest('.task-item');
+                
+                if (workspaceBtn) { appData.activeWorkspaceId = workspaceBtn.dataset.id; saveData(); renderAll(); return; }
+                if (editWsBtn) { openWorkspaceModal(editWsBtn.dataset.id); return; }
+                if (addWsBtn) { openWorkspaceModal(); return; }
+                if (deleteWsBtn) {
+                    const id = deleteWsBtn.dataset.id;
+                    openConfirmationModal('Delete this workspace and all its tasks?', () => {
+                        appData.workspaces = appData.workspaces.filter(ws => ws.id !== id);
+                        if (appData.activeWorkspaceId === id) appData.activeWorkspaceId = appData.workspaces[0]?.id || null;
+                        if (appData.workspaces.length === 0) {
+                            const newId = `ws-${Date.now()}`;
+                            appData.workspaces.push({ id: newId, name: 'Daily Planner', tasks: JSON.parse(JSON.stringify(defaultTasks)) });
+                            appData.activeWorkspaceId = newId;
+                        }
+                        saveData();
+                        renderAll();
+                    });
+                    return;
+                }
+                
+                const activeWorkspace = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId);
+                if (!activeWorkspace) return;
+
+                if (addTaskBtn) { openSimpleTaskModal(addTaskBtn.closest('.quadrant-container').id); return; }
+                
+                if (taskItem) {
+                    const quadrantId = taskItem.dataset.quadrant;
+                    const index = parseInt(taskItem.dataset.index);
+                    const task = activeWorkspace.tasks[quadrantId][index];
+
+                    if (e.target.closest('.delete-btn')) {
+                        activeWorkspace.tasks[quadrantId].splice(index, 1);
+                        saveData();
+                        renderTasks();
+                    } else if (e.target.matches('.task-checkbox')) {
+                        task.done = e.target.checked;
+                        if(task.subTasks) {
+                            task.subTasks.forEach(st => st.done = task.done);
+                        }
+                        saveData();
+                        renderTasks();
+                    } else if (!e.target.matches('input, button, svg, path')) {
+                        openTaskDetailsModal(quadrantId, index);
+                    }
+                }
+            });
+            
+            // Modal Save/Cancel/Close Listeners
+            document.getElementById('confirmation-confirm-btn').addEventListener('click', () => { if(confirmationCallback) confirmationCallback(); closeConfirmationModal(); });
+            document.getElementById('confirmation-cancel-btn').addEventListener('click', closeConfirmationModal);
+            
+            workspaceModal.querySelector('#workspace-save-btn').addEventListener('click', () => {
+                const name = workspaceInput.value.trim();
+                if (!name) return;
+                
+                if (editingWorkspaceId) {
+                    appData.workspaces.find(ws => ws.id === editingWorkspaceId).name = name;
+                } else {
+                    const newId = `ws-${Date.now()}`;
+                    appData.workspaces.push({ id: newId, name: name, tasks: JSON.parse(JSON.stringify(defaultTasks)) });
+                    appData.activeWorkspaceId = newId;
+                }
+                saveData();
+                renderAll();
+                closeWorkspaceModal();
+            });
+
+            taskModal.querySelector('#task-save-btn').addEventListener('click', () => {
+                const taskText = taskInput.value.trim();
+                if (taskText) {
+                    const activeWorkspace = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId);
+                    const task = { text: taskText, done: false, description: '', subTasks: [], attachments: [] };
+                    if (currentQuadrant) activeWorkspace.tasks[currentQuadrant].push(task); 
+                    saveData();
+                    renderTasks();
+                    closeSimpleTaskModal();
+                }
+            });
+            
+            function closeMediaPreview() {
+                mediaPreviewModal.classList.add('hidden');
+                videoPreviewElement.pause();
+                audioPreviewElement.pause();
+                
+                // Revoke the blob URL to free up memory
+                if (currentPreviewUrl) {
+                    URL.revokeObjectURL(currentPreviewUrl);
+                    currentPreviewUrl = null;
+                }
+                
+                // Clear sources
+                imagePreviewElement.src = '';
+                videoPreviewElement.src = '';
+                audioPreviewElement.src = '';
+                pdfPreviewElement.src = '';
+            }
+
+            document.getElementById('media-preview-close-btn').addEventListener('click', closeMediaPreview);
+            taskDetailsModal.querySelector('#task-details-close-btn').addEventListener('click', closeTaskDetailsModal);
+            workspaceModal.querySelector('#workspace-cancel-btn').addEventListener('click', closeWorkspaceModal);
+            taskModal.querySelector('#task-cancel-btn').addEventListener('click', closeSimpleTaskModal);
+            window.addEventListener('keydown', e => { if (e.key === 'Escape') { closeSimpleTaskModal(); closeWorkspaceModal(); closeConfirmationModal(); closeTaskDetailsModal(); closeMediaPreview(); }});
+            workspaceInput.addEventListener('keypress', e => e.key === 'Enter' && workspaceModal.querySelector('#workspace-save-btn').click());
+            taskInput.addEventListener('keypress', e => e.key === 'Enter' && taskModal.querySelector('#task-save-btn').click());
+
+            // Initial Load
+            async function main() {
+                await initDB();
+                loadData();
+                renderAll();
+            }
+            main();
+
+        });
+    </script>
+</body>
 </html>
