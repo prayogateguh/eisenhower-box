@@ -24,9 +24,9 @@
     </script>
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .tasks-container::-webkit-scrollbar, .subtasks-container::-webkit-scrollbar, #attachments-container::-webkit-scrollbar { width: 4px; }
-        .tasks-container::-webkit-scrollbar-thumb, .subtasks-container::-webkit-scrollbar-thumb, #attachments-container::-webkit-scrollbar-thumb { background-color: #4b5563; border-radius: 20px; }
-        .tasks-container, .subtasks-container, #attachments-container { scrollbar-width: thin; scrollbar-color: #4b5563 #1f2937; }
+        .tasks-container::-webkit-scrollbar, .subtasks-container::-webkit-scrollbar, #attachments-container::-webkit-scrollbar, .past-task-items-container::-webkit-scrollbar { width: 4px; }
+        .tasks-container::-webkit-scrollbar-thumb, .subtasks-container::-webkit-scrollbar-thumb, #attachments-container::-webkit-scrollbar-thumb, .past-task-items-container::-webkit-scrollbar-thumb { background-color: #4b5563; border-radius: 20px; }
+        .tasks-container, .subtasks-container, #attachments-container, .past-task-items-container { scrollbar-width: thin; scrollbar-color: #4b5563 #1f2937; }
         .task-checkbox:checked + .task-text, .subtask-checkbox:checked + .subtask-text { text-decoration: line-through; }
         .dark .task-checkbox:checked + .task-text, .dark .subtask-checkbox:checked + .subtask-text { color: #6b7280; }
         .light .task-checkbox:checked + .task-text, .light .subtask-checkbox:checked + .subtask-text { color: #9ca3af; }
@@ -70,12 +70,36 @@
             <header class="bg-gray-100 dark:bg-gray-900 border-b border-gray-300 dark:border-gray-700 px-4 md:px-6 py-3 flex items-center justify-between flex-shrink-0">
                  <!-- Workspace Manager / Breadcrumbs -->
                  <div id="workspace-manager" class="flex-grow flex items-center gap-2 text-sm md:text-lg"></div>
-                 <div class="flex items-center gap-4">
+                 <div class="flex items-center gap-2 md:gap-4 relative">
+                    <button id="today-btn" class="px-3 py-1.5 text-xs md:text-sm bg-gray-200 dark:bg-gray-700 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 focus-ring">Today</button>
+                     <div class="flex items-center">
+                        <button id="prev-day-btn" class="p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 focus-ring">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </button>
+                        <button id="calendar-btn" class="p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 focus-ring">
+                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </button>
+                         <button id="next-day-btn" class="p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 focus-ring">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </button>
+                    </div>
                      <span class="text-xs md:text-sm font-medium text-gray-500 dark:text-gray-400" id="current-date"></span>
                      <button id="mobile-theme-toggle-btn" class="p-2 rounded-md bg-gray-300 dark:bg-gray-700/50 text-gray-700 dark:text-yellow-400 focus-ring md:hidden">
                         <svg id="mobile-theme-icon-sun" class="h-5 w-5 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
                         <svg id="mobile-theme-icon-moon" class="h-5 w-5 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
                     </button>
+                     <div id="calendar-popover" class="hidden absolute top-full right-0 mt-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-xl z-20 p-4 w-72">
+                         <div class="flex justify-between items-center mb-2">
+                             <button id="prev-month-btn" class="p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 focus-ring">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                            </button>
+                             <div id="month-year" class="font-semibold"></div>
+                            <button id="next-month-btn" class="p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 focus-ring">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            </button>
+                         </div>
+                         <div id="calendar-grid" class="grid grid-cols-7 gap-1 text-center text-sm"></div>
+                     </div>
                  </div>
             </header>
             
@@ -218,8 +242,9 @@
             // Main application state
             let appData = {};
             let uiState = { 
-                unsortedCollapsed: false,
-                sortOptions: {}
+                unsortedCollapsed: true,
+                sortOptions: {},
+                currentDate: new Date()
             };
             let editingWorkspaceId = null;
             let draggedItem = null;
@@ -227,6 +252,8 @@
             let confirmationCallback = null;
             let editingTaskLocation = null;
             let currentPreviewUrl = null;
+            let calendarDate = new Date();
+
 
             // DOM Elements
             const grid = document.getElementById('eisenhower-grid');
@@ -236,6 +263,15 @@
             const currentDateEl = document.getElementById('current-date');
             const themeToggleBtn = document.getElementById('theme-toggle-btn');
             const mobileThemeToggleBtn = document.getElementById('mobile-theme-toggle-btn');
+            const todayBtn = document.getElementById('today-btn');
+            const prevDayBtn = document.getElementById('prev-day-btn');
+            const nextDayBtn = document.getElementById('next-day-btn');
+            const calendarBtn = document.getElementById('calendar-btn');
+            const calendarPopover = document.getElementById('calendar-popover');
+            const monthYearEl = document.getElementById('month-year');
+            const calendarGrid = document.getElementById('calendar-grid');
+            const prevMonthBtn = document.getElementById('prev-month-btn');
+            const nextMonthBtn = document.getElementById('next-month-btn');
 
             
             // Modals and their inputs
@@ -257,32 +293,71 @@
                 'urgent-not-important': [], 'not-urgent-not-important': []
             };
 
+            function getTodayDateString() {
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const day = String(today.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
             function loadData() {
-                const data = JSON.parse(localStorage.getItem('eisenhowerPlannerV5'));
-                if (data && data.workspaces && data.workspaces.length > 0) {
+                let data = JSON.parse(localStorage.getItem('eisenhowerPlannerV6'));
+                if (data && data.workspaces && data.workspaces[0] && Array.isArray(data.workspaces[0].tasks.unsorted)) {
+                    const today = getTodayDateString();
                     data.workspaces.forEach(ws => {
-                        Object.values(ws.tasks).forEach(quad => {
-                            quad.forEach(task => {
-                                if (task.description === undefined) task.description = '';
-                                if (task.subTasks === undefined) task.subTasks = [];
-                                if (task.attachments === undefined) task.attachments = [];
-                                if (task.status === undefined) {
+                        const oldTasks = JSON.parse(JSON.stringify(ws.tasks));
+                        ws.tasks = {}; 
+                        ws.tasks[today] = oldTasks;
+                        Object.values(ws.tasks[today]).forEach(quadrant => {
+                            quadrant.forEach(task => {
+                                task.createdAt = today;
+                                if(task.status === undefined) {
                                     task.status = task.done ? 'completed' : 'draft';
+                                }
+                                if(!task.id) {
+                                    task.id = `task-${Date.now()}-${Math.random()}`;
                                 }
                             });
                         });
                     });
                     appData = data;
-                } else {
+                    saveData();
+                } else if(data && data.workspaces) {
+                     data.workspaces.forEach(ws => {
+                        Object.values(ws.tasks).forEach(dateTasks => {
+                             Object.values(dateTasks).forEach(quadrant => {
+                                quadrant.forEach(task => {
+                                     if(!task.id) {
+                                        task.id = `task-${Date.now()}-${Math.random()}`;
+                                    }
+                                     if(task.status === undefined) {
+                                        task.status = task.done ? 'completed' : 'draft';
+                                    }
+                                });
+                            });
+                        });
+                    });
+                    appData = data;
+                }
+                else {
                     const defaultId1 = `ws-${Date.now()}`;
+                    const today = getTodayDateString();
                     appData = {
                         activeWorkspaceId: defaultId1,
-                        workspaces: [{ id: defaultId1, name: 'Daily Planner', tasks: JSON.parse(JSON.stringify(defaultTasks)) }]
+                        workspaces: [{ 
+                            id: defaultId1, 
+                            name: 'Daily Planner', 
+                            tasks: {
+                                [today]: JSON.parse(JSON.stringify(defaultTasks))
+                            } 
+                        }]
                     };
                 }
                 const storedUiState = JSON.parse(localStorage.getItem('eisenhowerUiStateV2'));
                 if (storedUiState) {
                     uiState = {...uiState, ...storedUiState};
+                    uiState.currentDate = new Date(uiState.currentDate) || new Date();
                     if (!uiState.sortOptions) uiState.sortOptions = {};
                 }
 
@@ -294,7 +369,7 @@
             }
 
             function saveData() {
-                localStorage.setItem('eisenhowerPlannerV5', JSON.stringify(appData));
+                localStorage.setItem('eisenhowerPlannerV6', JSON.stringify(appData));
                 localStorage.setItem('eisenhowerUiStateV2', JSON.stringify(uiState));
             }
 
@@ -329,7 +404,7 @@
                 if (window.innerWidth < 768) { // Mobile
                     desktopToggleBtn.classList.add('hidden');
                     mobileToggleBtn.classList.remove('hidden');
-                    unsortedColumnWrapper.classList.remove('md:w-16'); 
+                    unsortedColumnWrapper.classList.remove('md:w-3'); 
                     unsortedContainer.classList.remove('hidden');
 
                     if (uiState.unsortedCollapsed) {
@@ -369,7 +444,7 @@
             }
 
             function renderDate() {
-                currentDateEl.textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+                currentDateEl.textContent = uiState.currentDate.toLocaleDateString(undefined, { weekday: 'short', month: 'long', day: 'numeric' });
             }
             
             function renderWorkspaces() {
@@ -463,6 +538,23 @@
                             </div>
                         </div>
                         <div class="collapsible-content flex flex-col flex-grow min-h-0">
+                            <div class="past-tasks-container mb-4 border border-gray-300 dark:border-gray-700 rounded-lg hidden">
+                                <button class="toggle-past-tasks-btn w-full flex justify-between items-center p-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
+                                    <div class="flex items-center gap-2">
+                                        <span>Previous Pending Tasks</span>
+                                        <span class="past-task-count-badge bg-red-500 text-white text-xs rounded-full px-2 py-0.5"></span>
+                                    </div>
+                                    <svg class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </button>
+                                <div class="past-tasks-list p-2 space-y-2 hidden">
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 px-2">Select the tasks to move to today</p>
+                                    <div class="past-task-items-container max-h-40 overflow-y-auto space-y-2"></div>
+                                    <div class="flex gap-2 mt-2">
+                                        <button class="move-selected-btn w-full px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 focus-ring">Move selected</button>
+                                        <button class="move-all-btn w-full px-3 py-1 text-sm bg-gray-200 dark:bg-gray-600 rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 focus-ring">Move all</button>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="tasks-container flex-grow overflow-y-auto space-y-2 pr-2"></div>
                         </div>
                         <div class="add-task-container mt-auto pt-4">
@@ -528,8 +620,8 @@
                         const activeWS = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId);
                         const sourceQuadrantId = draggedItem.quadrantId;
                         const targetQuadrantId = quadrantEl.id;
-                        const sourceTasks = activeWS.tasks[sourceQuadrantId];
-                        const targetTasks = activeWS.tasks[targetQuadrantId];
+                        const sourceTasks = activeWS.tasks[uiState.currentDate.toISOString().split('T')[0]][sourceQuadrantId];
+                        const targetTasks = activeWS.tasks[uiState.currentDate.toISOString().split('T')[0]][targetQuadrantId];
 
                         const taskData = sourceTasks.splice(draggedItem.taskIndex, 1)[0];
 
@@ -574,21 +666,78 @@
                 }
                 return sortedTasks;
             }
+            
+            function getPastTasks(allTasks, quadrantId) {
+                const currentDate = uiState.currentDate.toISOString().split('T')[0];
+                const pastTasks = [];
+                for(const date in allTasks) {
+                    if (date < currentDate) {
+                        const tasksForDate = allTasks[date];
+                        if (tasksForDate[quadrantId]) {
+                            tasksForDate[quadrantId].forEach(task => {
+                                if(!task.done) {
+                                    pastTasks.push({...task, originalQuadrant: quadrantId, originalDate: date });
+                                }
+                            });
+                        }
+                    }
+                }
+                return pastTasks;
+            }
+            
+            function renderPastTasks(quadrantId, allTasks) {
+                const quadrantEl = document.getElementById(quadrantId);
+                const pastTasksContainer = quadrantEl.querySelector('.past-tasks-container');
+                const pastTasksList = pastTasksContainer.querySelector('.past-tasks-list');
+                const pastTaskItemsContainer = pastTasksContainer.querySelector('.past-task-items-container');
+                const badge = pastTasksContainer.querySelector('.past-task-count-badge');
+                
+                const pastTasks = getPastTasks(allTasks, quadrantId);
+
+                if(pastTasks.length > 0) {
+                    pastTasksContainer.classList.remove('hidden');
+                    badge.textContent = pastTasks.length;
+                    pastTaskItemsContainer.innerHTML = '';
+                    pastTasks.forEach(task => {
+                        const div = document.createElement('div');
+                        div.className = "flex items-center justify-between p-2 bg-gray-100 dark:bg-gray-700/50 rounded-md";
+                        const [year, month, day] = task.createdAt.split('-');
+                        const taskDate = new Date(year, month - 1, day);
+                        const formattedDate = taskDate.toLocaleDateString(undefined, {day:'numeric', month:'short'}).toUpperCase();
+                        div.innerHTML = `
+                            <label class="flex items-center gap-2 text-sm">
+                                <input type="checkbox" class="past-task-checkbox" data-task-id="${task.id}" data-task-date="${task.createdAt}">
+                                <span>${task.text}</span>
+                            </label>
+                            <span class="text-xs text-gray-500">${formattedDate}</span>
+                        `;
+                        pastTaskItemsContainer.appendChild(div);
+                    });
+                } else {
+                    pastTasksContainer.classList.add('hidden');
+                }
+            }
+
 
             function renderTasks() {
                 const activeWorkspace = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId);
                 if (!activeWorkspace) {
                     grid.innerHTML = ''; unsortedContainer.innerHTML = ''; return;
                 }
+                const currentDateStr = uiState.currentDate.toISOString().split('T')[0];
 
-                for (const quadrantId in activeWorkspace.tasks) {
+                if(!activeWorkspace.tasks[currentDateStr]) {
+                    activeWorkspace.tasks[currentDateStr] = JSON.parse(JSON.stringify(defaultTasks));
+                }
+
+                for (const quadrantId in defaultTasks) {
                     const container = document.getElementById(quadrantId);
                     if (!container) continue;
                     const tasksContainer = container.querySelector('.tasks-container');
                     tasksContainer.innerHTML = ''; 
                     
                     const sortOption = uiState.sortOptions[quadrantId] || 'default';
-                    let taskList = activeWorkspace.tasks[quadrantId];
+                    let taskList = (activeWorkspace.tasks[currentDateStr] && activeWorkspace.tasks[currentDateStr][quadrantId]) ? activeWorkspace.tasks[currentDateStr][quadrantId] : [];
 
                     if(sortOption !== 'default') {
                          taskList = sortTasks(taskList, sortOption);
@@ -598,10 +747,11 @@
                         tasksContainer.innerHTML = `<div class="flex-grow flex flex-col items-center justify-center h-full text-gray-500 dark:text-gray-600 opacity-50"><p class="text-sm font-medium mt-2">No tasks yet</p></div>`;
                     } else {
                         taskList.forEach((task, index) => {
-                             const originalIndex = sortOption === 'default' ? index : activeWorkspace.tasks[quadrantId].findIndex(t => t === task);
+                             const originalIndex = sortOption === 'default' ? index : (activeWorkspace.tasks[currentDateStr][quadrantId] || []).findIndex(t => t.id === task.id);
                              tasksContainer.appendChild(createTaskElement(task, quadrantId, originalIndex));
                         });
                     }
+                     renderPastTasks(quadrantId, activeWorkspace.tasks);
                 }
             }
             
@@ -683,7 +833,7 @@
             // --- TASK DETAILS MODAL ---
             function openTaskDetailsModal(quadrantId, index) {
                 editingTaskLocation = { quadrantId, index };
-                const task = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId).tasks[quadrantId][index];
+                const task = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId).tasks[uiState.currentDate.toISOString().split('T')[0]][quadrantId][index];
                 
                 taskDetailsModal.querySelector('#task-details-title').value = task.text;
                 taskDetailsModal.querySelector('#task-details-status').value = task.status;
@@ -698,8 +848,9 @@
                 if (editingTaskLocation) {
                     const { quadrantId, index } = editingTaskLocation;
                     const activeWS = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId);
-                    if(activeWS.tasks[quadrantId] && activeWS.tasks[quadrantId][index]) {
-                       const task = activeWS.tasks[quadrantId][index];
+                    const todayTasks = activeWS.tasks[uiState.currentDate.toISOString().split('T')[0]];
+                    if(todayTasks && todayTasks[quadrantId] && todayTasks[quadrantId][index]) {
+                       const task = todayTasks[quadrantId][index];
                        task.text = taskDetailsModal.querySelector('#task-details-title').value.trim();
                        task.description = taskDetailsModal.querySelector('#task-details-description').value.trim();
                        saveData();
@@ -770,7 +921,7 @@
                 const { quadrantId, index } = editingTaskLocation;
                 const activeWS = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId);
                 if (!activeWS) return;
-                const task = activeWS.tasks[quadrantId][index];
+                const task = activeWS.tasks[uiState.currentDate.toISOString().split('T')[0]][quadrantId][index];
                 if(!task) return;
 
 
@@ -857,7 +1008,7 @@
                 if(e.target.matches('#task-details-status')) {
                     const { quadrantId, index } = editingTaskLocation;
                     const activeWS = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId);
-                    const task = activeWS.tasks[quadrantId][index];
+                    const task = activeWS.tasks[uiState.currentDate.toISOString().split('T')[0]][quadrantId][index];
                     task.status = e.target.value;
                     task.done = task.status === 'completed';
                     saveData();
@@ -870,7 +1021,7 @@
                 if (!editingTaskLocation || !e.target.files[0]) return;
                 const file = e.target.files[0];
                 const { quadrantId, index } = editingTaskLocation;
-                const task = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId).tasks[quadrantId][index];
+                const task = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId).tasks[uiState.currentDate.toISOString().split('T')[0]][quadrantId][index];
                 
                 if (!task.attachments) task.attachments = [];
                 
@@ -951,7 +1102,7 @@
                 if (!targetElement) return;
 
                 const { quadrantId, index } = editingTaskLocation;
-                const task = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId).tasks[quadrantId][index];
+                const task = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId).tasks[uiState.currentDate.toISOString().split('T')[0]][quadrantId][index];
 
                 const draggedSubtask = task.subTasks.splice(draggedSubtaskIndex, 1)[0];
                 let dropIndex = parseInt(targetElement.dataset.index);
@@ -975,7 +1126,7 @@
                 e.preventDefault();
                  if(!editingTaskLocation) return;
                 const { quadrantId, index } = editingTaskLocation;
-                const task = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId).tasks[quadrantId][index];
+                const task = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId).tasks[uiState.currentDate.toISOString().split('T')[0]][quadrantId][index];
                 
                 const input = document.getElementById('subtask-input');
                 const text = input.value.trim();
@@ -993,18 +1144,24 @@
                 const quadrantId = form.dataset.quadrantId;
                 const input = form.querySelector('.new-task-input');
                 const taskText = input.value.trim();
+                const dateStr = uiState.currentDate.toISOString().split('T')[0];
 
                 if (taskText) {
                     const activeWorkspace = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId);
+                    if(!activeWorkspace.tasks[dateStr]) {
+                        activeWorkspace.tasks[dateStr] = JSON.parse(JSON.stringify(defaultTasks));
+                    }
                     const task = { 
+                        id: `task-${Date.now()}-${Math.random()}`,
                         text: taskText, 
                         done: false, 
                         status: 'draft', 
                         description: '', 
                         subTasks: [], 
-                        attachments: [] 
+                        attachments: [],
+                        createdAt: dateStr,
                     };
-                    activeWorkspace.tasks[quadrantId].push(task); 
+                    activeWorkspace.tasks[dateStr][quadrantId].push(task); 
                     saveData();
                     renderTasks();
                 }
@@ -1045,6 +1202,9 @@
                 const saveBtn = e.target.closest('.save-inline-task-btn');
                 const sortBtn = e.target.closest('.sort-tasks-btn');
                 const sortMenuItem = e.target.closest('.sort-menu button');
+                const pastTaskToggle = e.target.closest('.toggle-past-tasks-btn');
+                const moveSelectedBtn = e.target.closest('.move-selected-btn');
+                const moveAllBtn = e.target.closest('.move-all-btn');
 
                 if (sortBtn) {
                     const menu = sortBtn.nextElementSibling;
@@ -1060,6 +1220,28 @@
                     renderTasks();
                     sortMenuItem.closest('.sort-menu').classList.add('hidden');
                     return;
+                }
+
+                if (pastTaskToggle) {
+                    const list = pastTaskToggle.nextElementSibling;
+                    list.classList.toggle('hidden');
+                    pastTaskToggle.querySelector('svg').classList.toggle('rotate-180');
+                    return;
+                }
+                
+                if(moveSelectedBtn || moveAllBtn) {
+                     const quadrantId = moveSelectedBtn ? moveSelectedBtn.closest('.quadrant-container').id : moveAllBtn.closest('.quadrant-container').id;
+                    const checkboxes = moveSelectedBtn ? 
+                        moveSelectedBtn.closest('.past-tasks-list').querySelectorAll('.past-task-checkbox:checked') :
+                        moveAllBtn.closest('.past-tasks-list').querySelectorAll('.past-task-checkbox');
+
+                    checkboxes.forEach(checkbox => {
+                        const taskId = checkbox.dataset.taskId;
+                        const taskDate = checkbox.dataset.taskDate;
+                        movePastTaskToToday(taskId, taskDate, quadrantId);
+                    });
+                     saveData();
+                     renderTasks();
                 }
 
                 // Hide open sort menus if clicking elsewhere
@@ -1104,7 +1286,7 @@
                         if (appData.activeWorkspaceId === id) appData.activeWorkspaceId = appData.workspaces[0]?.id || null;
                         if (appData.workspaces.length === 0) {
                             const newId = `ws-${Date.now()}`;
-                            appData.workspaces.push({ id: newId, name: 'Daily Planner', tasks: JSON.parse(JSON.stringify(defaultTasks)) });
+                            appData.workspaces.push({ id: newId, name: 'Daily Planner', tasks: { [getTodayDateString()]: JSON.parse(JSON.stringify(defaultTasks)) } });
                             appData.activeWorkspaceId = newId;
                         }
                         saveData();
@@ -1120,10 +1302,10 @@
                 if (taskItem) {
                     const quadrantId = taskItem.dataset.quadrant;
                     const index = parseInt(taskItem.dataset.index);
-                    const task = activeWorkspace.tasks[quadrantId][index];
+                    const task = activeWorkspace.tasks[uiState.currentDate.toISOString().split('T')[0]][quadrantId][index];
 
                     if (e.target.closest('.delete-btn')) {
-                        activeWorkspace.tasks[quadrantId].splice(index, 1);
+                        activeWorkspace.tasks[uiState.currentDate.toISOString().split('T')[0]][quadrantId].splice(index, 1);
                         saveData();
                         renderTasks();
                     } else if (e.target.matches('.task-checkbox')) {
@@ -1153,7 +1335,7 @@
                     appData.workspaces.find(ws => ws.id === editingWorkspaceId).name = name;
                 } else {
                     const newId = `ws-${Date.now()}`;
-                    appData.workspaces.push({ id: newId, name: name, tasks: JSON.parse(JSON.stringify(defaultTasks)) });
+                    appData.workspaces.push({ id: newId, name: name, tasks: { [getTodayDateString()]: JSON.parse(JSON.stringify(defaultTasks)) } });
                     appData.activeWorkspaceId = newId;
                 }
                 saveData();
@@ -1206,6 +1388,130 @@
 
 
             window.addEventListener('resize', applyUiState);
+
+            // --- DATE PICKER LOGIC ---
+            function renderCalendar() {
+                calendarGrid.innerHTML = '';
+                monthYearEl.textContent = calendarDate.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+                const year = calendarDate.getFullYear();
+                const month = calendarDate.getMonth();
+                const firstDayOfMonth = new Date(year, month, 1);
+                const lastDayOfMonth = new Date(year, month + 1, 0);
+                const daysInMonth = lastDayOfMonth.getDate();
+                const startDay = firstDayOfMonth.getDay();
+
+                const dayLabels = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+                dayLabels.forEach(label => {
+                    const div = document.createElement('div');
+                    div.className = "font-semibold text-xs text-gray-500";
+                    div.textContent = label;
+                    calendarGrid.appendChild(div);
+                });
+
+                for (let i = 0; i < startDay; i++) {
+                    calendarGrid.appendChild(document.createElement('div'));
+                }
+
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dayEl = document.createElement('button');
+                    dayEl.textContent = day;
+                    dayEl.className = "p-1 rounded-full hover:bg-blue-200 dark:hover:bg-blue-800 focus:outline-none";
+                    
+                    const date = new Date(year, month, day);
+                    const isToday = date.toDateString() === new Date().toDateString();
+                    const isSelected = date.toDateString() === uiState.currentDate.toDateString();
+
+                    if (isToday) {
+                        dayEl.classList.add('bg-blue-500', 'text-white');
+                    }
+                    if (isSelected) {
+                        dayEl.classList.add('ring-2', 'ring-blue-500');
+                    }
+
+                    dayEl.addEventListener('click', () => {
+                        uiState.currentDate = date;
+                        calendarDate = new Date(date);
+                        saveData();
+                        renderAll();
+                        calendarPopover.classList.add('hidden');
+                    });
+                    calendarGrid.appendChild(dayEl);
+                }
+            }
+
+            todayBtn.addEventListener('click', () => {
+                uiState.currentDate = new Date();
+                calendarDate = new Date();
+                saveData();
+                renderAll();
+            });
+
+            prevDayBtn.addEventListener('click', () => {
+                uiState.currentDate.setDate(uiState.currentDate.getDate() - 1);
+                calendarDate = new Date(uiState.currentDate);
+                saveData();
+                renderAll();
+            });
+
+            nextDayBtn.addEventListener('click', () => {
+                uiState.currentDate.setDate(uiState.currentDate.getDate() + 1);
+                calendarDate = new Date(uiState.currentDate);
+                saveData();
+                renderAll();
+            });
+            
+            calendarBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                calendarPopover.classList.toggle('hidden');
+                if (!calendarPopover.classList.contains('hidden')) {
+                    calendarDate = new Date(uiState.currentDate);
+                    renderCalendar();
+                }
+            });
+
+            prevMonthBtn.addEventListener('click', () => {
+                calendarDate.setMonth(calendarDate.getMonth() - 1);
+                renderCalendar();
+            });
+
+            nextMonthBtn.addEventListener('click', () => {
+                calendarDate.setMonth(calendarDate.getMonth() + 1);
+                renderCalendar();
+            });
+
+            document.addEventListener('click', (e) => {
+                if (calendarPopover && !calendarPopover.contains(e.target) && e.target !== calendarBtn && !calendarBtn.contains(e.target)) {
+                    calendarPopover.classList.add('hidden');
+                }
+            });
+
+             function movePastTaskToToday(taskId, taskDateStr, targetQuadrantId) {
+                const activeWS = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId);
+                let taskToMove = null;
+                let sourceQuadrantId = null;
+                let taskIndex = -1;
+
+                for (const quadrantId in activeWS.tasks[taskDateStr]) {
+                    const index = activeWS.tasks[taskDateStr][quadrantId].findIndex(t => t.id === taskId);
+                    if (index > -1) {
+                        taskToMove = activeWS.tasks[taskDateStr][quadrantId][index];
+                        sourceQuadrantId = quadrantId;
+                        taskIndex = index;
+                        break;
+                    }
+                }
+
+                if (taskToMove) {
+                    activeWS.tasks[taskDateStr][sourceQuadrantId].splice(taskIndex, 1);
+                    const todayStr = getTodayDateString();
+                    if (!activeWS.tasks[todayStr]) {
+                        activeWS.tasks[todayStr] = JSON.parse(JSON.stringify(defaultTasks));
+                    }
+                    taskToMove.createdAt = todayStr;
+                    activeWS.tasks[todayStr][targetQuadrantId].push(taskToMove);
+                }
+            }
+
 
             // Initial Load
             async function main() {
