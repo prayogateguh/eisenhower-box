@@ -122,17 +122,6 @@
         </div>
     </div>
 
-    <div id="task-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
-        <div class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-xl p-6 w-full max-w-md">
-            <h3 id="task-modal-title" class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Add a New Task</h3>
-            <input type="text" id="task-input" class="w-full bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 rounded-md p-2 focus-ring" placeholder="Enter your task...">
-            <div class="mt-4 flex justify-end gap-3">
-                <button id="task-cancel-btn" class="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 focus-ring">Cancel</button>
-                <button id="task-save-btn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus-ring">Save Task</button>
-            </div>
-        </div>
-    </div>
-    
     <div id="task-details-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
         <div class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-xl p-6 w-full max-w-lg flex flex-col" style="max-height: 85vh;">
             <div class="flex justify-between items-start mb-4">
@@ -234,7 +223,6 @@
                 unsortedCollapsed: false,
                 sortOptions: {}
             };
-            let currentQuadrant = null;
             let editingWorkspaceId = null;
             let draggedItem = null;
             let draggedSubtaskIndex = null;
@@ -254,8 +242,6 @@
 
             
             // Modals and their inputs
-            const taskModal = document.getElementById('task-modal');
-            const taskInput = taskModal.querySelector('#task-input');
             const workspaceModal = document.getElementById('workspace-modal');
             const workspaceInput = workspaceModal.querySelector('#workspace-input');
             const confirmationModal = document.getElementById('confirmation-modal');
@@ -453,8 +439,8 @@
                     quadrantEl.id = q.id;
                     const isUnsorted = q.id === 'unsorted';
                     let quadrantClasses = 'quadrant-container bg-gray-200/50 dark:bg-gray-800 rounded-2xl border border-gray-300 dark:border-gray-700 p-4 md:p-5 flex flex-col';
-                    if (i === quadrantData.length - 1) {
-                        quadrantClasses += ' mb-4 md:mb-0';
+                    if (q.id === 'not-urgent-not-important') {
+                         quadrantClasses += ' mb-6 md:mb-0';
                     }
                     quadrantEl.className = quadrantClasses;
                     quadrantEl.innerHTML = `
@@ -471,9 +457,21 @@
                         </div>
                         <div class="collapsible-content flex flex-col flex-grow min-h-0">
                             <p class="text-sm text-gray-500 dark:text-gray-500 mb-4">${q.desc}</p>
-                            <div class="tasks-container flex-grow overflow-y-auto space-y-2 pr-2 min-h-[100px]"></div>
+                            <div class="tasks-container flex-grow overflow-y-auto space-y-2 pr-2 min-h-[150px] md:min-h-0"></div>
                         </div>
-                        <button class="add-task-btn mt-auto pt-4 text-sm font-medium ${q.color.replace('text-', 'hover:text-').replace('-500', '-600').replace('-400', '-300')} self-start focus-ring rounded">Add a task</button>
+                        <div class="add-task-container mt-auto pt-4">
+                            <button class="add-task-btn w-full text-left flex items-center gap-2 p-2 rounded-lg border-2 border-dashed border-gray-400/50 dark:border-gray-600/50 hover:bg-gray-300/20 dark:hover:bg-gray-700/40 text-gray-500 dark:text-gray-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+                                <span>Add a task</span>
+                            </button>
+                            <form class="add-task-form hidden" data-quadrant-id="${q.id}">
+                                <textarea class="new-task-input w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 rounded-md p-2 focus-ring" placeholder="Type and press enter to save..."></textarea>
+                                <div class="flex items-center justify-end gap-2 mt-2">
+                                    <button type="button" class="cancel-inline-task-btn px-3 py-1 text-sm bg-gray-200 dark:bg-gray-600 rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 focus-ring">Cancel</button>
+                                    <button type="button" class="save-inline-task-btn px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 focus-ring">Save</button>
+                                </div>
+                            </form>
+                        </div>
                     `;
                     
                     if (isUnsorted) {
@@ -665,18 +663,7 @@
                 confirmationCallback = onConfirm;
             }
             function closeConfirmationModal() { confirmationModal.classList.add('hidden'); confirmationCallback = null; }
-
-            function openSimpleTaskModal(quadrant) {
-                taskInput.value = ''; // Clear previous input
-                taskModal.classList.remove('hidden'); 
-                taskInput.focus(); 
-                currentQuadrant = quadrant;
-            };
-            function closeSimpleTaskModal() { 
-                taskModal.classList.add('hidden');
-                taskInput.value = ''; // Ensure cleared on close
-            };
-
+            
             function openWorkspaceModal(id = null) {
                 workspaceInput.value = '';
                 workspaceModal.classList.remove('hidden'); workspaceInput.focus(); editingWorkspaceId = id;
@@ -975,24 +962,34 @@
                 saveData();
                 renderSubTasks(task.subTasks);
             });
+            
+            function handleSaveNewTask(form) {
+                const quadrantId = form.dataset.quadrantId;
+                const input = form.querySelector('.new-task-input');
+                const taskText = input.value.trim();
 
-            document.getElementById('add-subtask-form').addEventListener('submit', e => {
-                e.preventDefault();
-                 if(!editingTaskLocation) return;
-                const { quadrantId, index } = editingTaskLocation;
-                const task = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId).tasks[quadrantId][index];
-                
-                const input = document.getElementById('subtask-input');
-                const text = input.value.trim();
-                if(text) {
-                    if (!task.subTasks) task.subTasks = [];
-                    task.subTasks.push({ text, done: false });
-                    input.value = '';
+                if (taskText) {
+                    const activeWorkspace = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId);
+                    const task = { 
+                        text: taskText, 
+                        done: false, 
+                        status: 'draft', 
+                        description: '', 
+                        subTasks: [], 
+                        attachments: [] 
+                    };
+                    activeWorkspace.tasks[quadrantId].push(task); 
                     saveData();
-                    renderSubTasks(task.subTasks);
                     renderTasks();
                 }
-            });
+                
+                // Reset form
+                const container = form.closest('.add-task-container');
+                const button = container.querySelector('.add-task-btn');
+                form.classList.add('hidden');
+                button.classList.remove('hidden');
+                input.value = '';
+            }
 
             // Global Click Listener
             document.body.addEventListener('click', e => {
@@ -1025,7 +1022,36 @@
                 const addWsBtn = e.target.closest('#add-workspace-btn-dropdown');
                 const addTaskBtn = e.target.closest('.add-task-btn');
                 const taskItem = e.target.closest('.task-item');
+                const cancelBtn = e.target.closest('.cancel-inline-task-btn');
+                const saveBtn = e.target.closest('.save-inline-task-btn');
+
+                if (addTaskBtn) {
+                    document.querySelectorAll('.add-task-form').forEach(form => form.classList.add('hidden'));
+                    document.querySelectorAll('.add-task-btn').forEach(btn => btn.classList.remove('hidden'));
+                    const container = addTaskBtn.closest('.add-task-container');
+                    const form = container.querySelector('.add-task-form');
+                    addTaskBtn.classList.add('hidden');
+                    form.classList.remove('hidden');
+                    form.querySelector('.new-task-input').focus();
+                    return;
+                }
                 
+                if (cancelBtn) {
+                    const container = cancelBtn.closest('.add-task-container');
+                    const form = container.querySelector('.add-task-form');
+                    const button = container.querySelector('.add-task-btn');
+                    form.classList.add('hidden');
+                    button.classList.remove('hidden');
+                    form.querySelector('.new-task-input').value = '';
+                    return;
+                }
+
+                if(saveBtn) {
+                    const form = saveBtn.closest('.add-task-form');
+                    handleSaveNewTask(form);
+                    return;
+                }
+
                 if (workspaceBtn) { appData.activeWorkspaceId = workspaceBtn.dataset.id; saveData(); renderAll(); return; }
                 if (editWsBtn) { openWorkspaceModal(editWsBtn.dataset.id); return; }
                 if (addWsBtn) { openWorkspaceModal(); return; }
@@ -1048,7 +1074,6 @@
                 const activeWorkspace = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId);
                 if (!activeWorkspace) return;
 
-                if (addTaskBtn) { openSimpleTaskModal(addTaskBtn.closest('.quadrant-container').id); return; }
                 
                 if (taskItem) {
                     const quadrantId = taskItem.dataset.quadrant;
@@ -1102,18 +1127,6 @@
                 renderAll();
                 closeWorkspaceModal();
             });
-
-            taskModal.querySelector('#task-save-btn').addEventListener('click', () => {
-                const taskText = taskInput.value.trim();
-                if (taskText) {
-                    const activeWorkspace = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId);
-                    const task = { text: taskText, done: false, status: 'draft', description: '', subTasks: [], attachments: [] };
-                    if (currentQuadrant) activeWorkspace.tasks[currentQuadrant].push(task); 
-                    saveData();
-                    renderTasks();
-                    closeSimpleTaskModal();
-                }
-            });
             
             function closeMediaPreview() {
                 mediaPreviewModal.classList.add('hidden');
@@ -1136,10 +1149,28 @@
             document.getElementById('media-preview-close-btn').addEventListener('click', closeMediaPreview);
             taskDetailsModal.querySelector('#task-details-close-btn').addEventListener('click', closeTaskDetailsModal);
             workspaceModal.querySelector('#workspace-cancel-btn').addEventListener('click', closeWorkspaceModal);
-            taskModal.querySelector('#task-cancel-btn').addEventListener('click', closeSimpleTaskModal);
-            window.addEventListener('keydown', e => { if (e.key === 'Escape') { closeSimpleTaskModal(); closeWorkspaceModal(); closeConfirmationModal(); closeTaskDetailsModal(); closeMediaPreview(); }});
+            window.addEventListener('keydown', e => { if (e.key === 'Escape') { 
+                const openForm = document.querySelector('.add-task-form:not(.hidden)');
+                if(openForm) {
+                    openForm.closest('.add-task-container').querySelector('.cancel-inline-task-btn').click();
+                }
+                closeWorkspaceModal(); 
+                closeConfirmationModal(); 
+                closeTaskDetailsModal(); 
+                closeMediaPreview(); 
+            }});
             workspaceInput.addEventListener('keypress', e => e.key === 'Enter' && workspaceModal.querySelector('#workspace-save-btn').click());
-            taskInput.addEventListener('keypress', e => e.key === 'Enter' && taskModal.querySelector('#task-save-btn').click());
+            
+            document.body.addEventListener('keydown', e => {
+                if (e.target.matches('.new-task-input')) {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        const form = e.target.closest('.add-task-form');
+                        handleSaveNewTask(form);
+                    }
+                }
+            });
+
 
             window.addEventListener('resize', applyUiState);
 
