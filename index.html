@@ -233,7 +233,6 @@
             const workspaceManager = document.getElementById('workspace-manager');
             const unsortedColumnWrapper = document.getElementById('unsorted-column-wrapper');
             const unsortedContainer = document.getElementById('unsorted-container');
-            const expandUnsortedContainer = document.getElementById('expand-unsorted-container');
             const currentDateEl = document.getElementById('current-date');
             const themeToggleBtn = document.getElementById('theme-toggle-btn');
             const mobileThemeToggleBtn = document.getElementById('mobile-theme-toggle-btn');
@@ -330,6 +329,7 @@
 
                 if (window.innerWidth < 768) { // Mobile
                     desktopToggleBtn.classList.add('hidden');
+                    mobileToggleBtn.classList.remove('hidden');
                     if (uiState.unsortedCollapsed) {
                         collapsibleContent.classList.add('hidden');
                         mobileToggleIcon.classList.remove('rotate-180');
@@ -339,18 +339,19 @@
                     }
                 } else { // Desktop
                     desktopToggleBtn.classList.remove('hidden');
+                    mobileToggleBtn.classList.add('hidden');
                     collapsibleContent.classList.remove('hidden');
                     mobileToggleIcon.classList.remove('rotate-180');
                     if (uiState.unsortedCollapsed) {
                         unsortedColumnWrapper.classList.remove('md:w-96');
-                        unsortedColumnWrapper.classList.add('md:w-3');
+                        unsortedColumnWrapper.classList.add('md:w-16');
                         unsortedContainer.classList.add('hidden');
-                        desktopToggleIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />';
+                        desktopToggleIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />';
                     } else {
                         unsortedColumnWrapper.classList.add('md:w-96');
-                        unsortedColumnWrapper.classList.remove('md:w-3');
+                        unsortedColumnWrapper.classList.remove('md:w-16');
                         unsortedContainer.classList.remove('hidden');
-                        desktopToggleIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />';
+                        desktopToggleIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />';
                     }
                 }
             }
@@ -756,6 +757,10 @@
 
             // Task Details Modal Listeners
             taskDetailsModal.addEventListener('click', async e => {
+                if (e.target.closest('#task-details-close-btn')) {
+                    closeTaskDetailsModal();
+                }
+
                 if(!editingTaskLocation) return;
                 const { quadrantId, index } = editingTaskLocation;
                 const activeWS = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId);
@@ -959,6 +964,24 @@
                 task.subTasks.splice(dropIndex, 0, draggedSubtask);
                 saveData();
                 renderSubTasks(task.subTasks);
+            });
+            
+            document.getElementById('add-subtask-form').addEventListener('submit', e => {
+                e.preventDefault();
+                 if(!editingTaskLocation) return;
+                const { quadrantId, index } = editingTaskLocation;
+                const task = appData.workspaces.find(ws => ws.id === appData.activeWorkspaceId).tasks[quadrantId][index];
+                
+                const input = document.getElementById('subtask-input');
+                const text = input.value.trim();
+                if(text) {
+                    if (!task.subTasks) task.subTasks = [];
+                    task.subTasks.push({ text, done: false });
+                    input.value = '';
+                    saveData();
+                    renderSubTasks(task.subTasks);
+                    renderTasks();
+                }
             });
             
             function handleSaveNewTask(form) {
