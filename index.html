@@ -347,7 +347,7 @@
                         activeWorkspaceId: defaultId1,
                         workspaces: [{ 
                             id: defaultId1, 
-                            name: 'Daily Planner', 
+                            name: 'Personal', 
                             tasks: {
                                 [today]: JSON.parse(JSON.stringify(defaultTasks))
                             } 
@@ -1286,7 +1286,7 @@
                         if (appData.activeWorkspaceId === id) appData.activeWorkspaceId = appData.workspaces[0]?.id || null;
                         if (appData.workspaces.length === 0) {
                             const newId = `ws-${Date.now()}`;
-                            appData.workspaces.push({ id: newId, name: 'Daily Planner', tasks: { [getTodayDateString()]: JSON.parse(JSON.stringify(defaultTasks)) } });
+                            appData.workspaces.push({ id: newId, name: 'Personal', tasks: { [getTodayDateString()]: JSON.parse(JSON.stringify(defaultTasks)) } });
                             appData.activeWorkspaceId = newId;
                         }
                         saveData();
