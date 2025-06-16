@@ -67,11 +67,11 @@
 
         <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden">
-            <header class="bg-gray-100 dark:bg-gray-900 border-b border-gray-300 dark:border-gray-700 px-4 md:px-6 py-3 flex items-center justify-between flex-shrink-0">
+            <header class="bg-gray-100 dark:bg-gray-900 border-b border-gray-300 dark:border-gray-700 px-2 sm:px-4 md:px-6 py-3 flex items-center justify-between flex-shrink-0">
                  <!-- Workspace Manager / Breadcrumbs -->
-                 <div id="workspace-manager" class="flex-grow flex items-center gap-2 text-sm md:text-lg"></div>
-                 <div class="flex items-center gap-2 md:gap-4 relative">
-                    <button id="today-btn" class="px-3 py-1.5 text-xs md:text-sm bg-gray-200 dark:bg-gray-700 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 focus-ring">Today</button>
+                 <div id="workspace-manager" class="flex-grow flex items-center gap-1 md:gap-2 text-sm md:text-lg min-w-0"></div>
+                 <div class="flex items-center gap-1 md:gap-4 relative flex-shrink-0">
+                    <button id="today-btn" class="px-2 py-1.5 text-xs md:text-sm bg-gray-200 dark:bg-gray-700 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 focus-ring hidden sm:block">Today</button>
                      <div class="flex items-center">
                         <button id="prev-day-btn" class="p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 focus-ring">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
@@ -242,7 +242,7 @@
             // Main application state
             let appData = {};
             let uiState = { 
-                unsortedCollapsed: true,
+                unsortedCollapsed: false,
                 sortOptions: {},
                 currentDate: new Date()
             };
@@ -347,7 +347,7 @@
                         activeWorkspaceId: defaultId1,
                         workspaces: [{ 
                             id: defaultId1, 
-                            name: 'Personal', 
+                            name: 'Daily Planner', 
                             tasks: {
                                 [today]: JSON.parse(JSON.stringify(defaultTasks))
                             } 
@@ -404,7 +404,7 @@
                 if (window.innerWidth < 768) { // Mobile
                     desktopToggleBtn.classList.add('hidden');
                     mobileToggleBtn.classList.remove('hidden');
-                    unsortedColumnWrapper.classList.remove('md:w-3'); 
+                    unsortedColumnWrapper.classList.remove('md:w-16'); 
                     unsortedContainer.classList.remove('hidden');
 
                     if (uiState.unsortedCollapsed) {
@@ -421,12 +421,12 @@
                     
                     if (uiState.unsortedCollapsed) {
                         unsortedColumnWrapper.classList.remove('md:w-96');
-                        unsortedColumnWrapper.classList.add('md:w-3');
+                        unsortedColumnWrapper.classList.add('md:w-16');
                         unsortedContainer.classList.add('hidden');
                         desktopToggleIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />';
                     } else {
                         unsortedColumnWrapper.classList.add('md:w-96');
-                        unsortedColumnWrapper.classList.remove('md:w-3');
+                        unsortedColumnWrapper.classList.remove('md:w-16');
                         unsortedContainer.classList.remove('hidden');
                         desktopToggleIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />';
                     }
@@ -444,7 +444,13 @@
             }
 
             function renderDate() {
-                currentDateEl.textContent = uiState.currentDate.toLocaleDateString(undefined, { weekday: 'short', month: 'long', day: 'numeric' });
+                 let options = { month: 'long', day: 'numeric' };
+                 if (window.innerWidth >= 768) {
+                     options = { weekday: 'long', month: 'long', day: 'numeric' };
+                 } else if (window.innerWidth >= 640) {
+                     options = { weekday: 'short', month: 'long', day: 'numeric' };
+                 }
+                currentDateEl.textContent = uiState.currentDate.toLocaleDateString(undefined, options);
             }
             
             function renderWorkspaces() {
@@ -1286,7 +1292,7 @@
                         if (appData.activeWorkspaceId === id) appData.activeWorkspaceId = appData.workspaces[0]?.id || null;
                         if (appData.workspaces.length === 0) {
                             const newId = `ws-${Date.now()}`;
-                            appData.workspaces.push({ id: newId, name: 'Personal', tasks: { [getTodayDateString()]: JSON.parse(JSON.stringify(defaultTasks)) } });
+                            appData.workspaces.push({ id: newId, name: 'Daily Planner', tasks: { [getTodayDateString()]: JSON.parse(JSON.stringify(defaultTasks)) } });
                             appData.activeWorkspaceId = newId;
                         }
                         saveData();
